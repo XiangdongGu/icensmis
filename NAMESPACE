@@ -1,0 +1,7 @@
+export(datasim)
+export(icmis)
+export(icpower)
+export(icpower.val)
+export(icpowerpf)
+importFrom(Rcpp,evalCpp)
+useDynLib(icensmis)
