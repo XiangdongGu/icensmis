@@ -5,7 +5,7 @@ Title: Study Design and Data Analysis in the presence of error-prone diagnostic
 Version: 1.2
 Date: 2014-2-24
 Author: Xiangdong Gu and Raji Balasubramanian
-Maintainer: Xiangdong Gu <xdgu@schoolph.umass.edu>
+Maintainer: Xiangdong Gu <ustcgxd@gmail.com>
 Description: We consider studies in which information from error-prone
     diagnostic tests or self-reports are gathered sequentially to determine the
     occurrence of a silent event. Using a likelihood-based approach
