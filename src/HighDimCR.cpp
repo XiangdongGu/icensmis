@@ -392,10 +392,10 @@ IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1
       omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
       //report
       if (iter % nreport == 0) {
-        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
-        std::cout << "Survival parameters:";
-        for (k=0;k < J; k++) std::cout << par[k] << ",  ";
-        std::cout << "\n";       
+//        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
+//        std::cout << "Survival parameters:";
+//        for (k=0;k < J; k++) std::cout << par[k] << ",  ";
+//        std::cout << "\n";       
       }
     }
     return outgamma;    
@@ -466,10 +466,10 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
       omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
       //report
       if (iter % nreport == 0) {
-        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
-        std::cout << "Survival parameters:";
-        for (k=0;k < JS; k++) std::cout << par[k] << ",  ";
-        std::cout << "\n";       
+//        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
+//        std::cout << "Survival parameters:";
+//        for (k=0;k < JS; k++) std::cout << par[k] << ",  ";
+//        std::cout << "\n";       
       }
     }
     return outgamma;    
@@ -799,10 +799,10 @@ IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1
       omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
       //report
       if (iter % nreport == 0) {
-        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
-        std::cout << "Survival parameters:";
-        for (k=0;k < J; k++) std::cout << par[k] << ",  ";
-        std::cout << "\n";       
+//        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
+//        std::cout << "Survival parameters:";
+//        for (k=0;k < J; k++) std::cout << par[k] << ",  ";
+//        std::cout << "\n";       
       }
     }
     return outgamma;    

@@ -102,7 +102,8 @@
 #'   
 #' @useDynLib icensmis
 #' @importFrom Rcpp evalCpp
-
+#' @importFrom stats model.matrix optim pnorm qnorm rbinom rexp rnorm runif sd
+#' 
 datasim <- function(N, blambda, testtimes, sensitivity, specificity, 
                      betas = NULL, twogroup = NULL, pmiss = 0, pcensor = 0, design = "MCAR",
                      negpred = 1, time.varying = F) {
@@ -218,7 +219,8 @@ datasim <- function(N, blambda, testtimes, sensitivity, specificity,
       x
     })
     data1 <- unsplit(data1, data$ID)
-    data1 <- subset(data1, testtime < censortime)
+    #data1 <- subset(data1, testtime < censortime)
+    data1 <- data1[data1$testtime < data1$censortime, ]
     drop <- which(names(data1) == "censortime")
     data <- data1[, -drop]    
   }

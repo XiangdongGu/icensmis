@@ -62,7 +62,7 @@ lassofit <- function(Dm, Xmat, minlambda, initsurv, CV.folds=NULL, nlambda = 20,
     }    
   }
   if (!is.null(CV.folds)) {
-    loglik <- function(parm, Dm, Xmat)  -icensmis:::loglikB(parm, Dm, Xmat)
+    loglik <- function(parm, Dm, Xmat)  -loglikB(parm, Dm, Xmat)
     group <- split(sample(1:nrow(Dm)), 1:CV.folds)
     liks <- matrix(0, nrow = length(group), ncol = length(lambdas))
     for (i in seq_along(group)) {
