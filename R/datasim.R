@@ -51,6 +51,9 @@
 #'   probabilities of each test being randomly missing at each test time. If 
 #'   pmiss is a single value, then each test is assumed to have an identical 
 #'   probability of missingness.
+#' @param pcensor a value or a vector (must have same length as testtimes) of
+#' the probability of censoring at each visit, assuming censoring process
+#' is independent on other missing mechanisms.
 #' @param design missing mechanism: "MCAR" or "NTFP"
 #' @param negpred baseline negative predictive value, i.e. the probability of being 
 #'   truely disease free for those who were tested (reported) as disease free at
@@ -101,7 +104,7 @@
 #' @importFrom Rcpp evalCpp
 
 datasim <- function(N, blambda, testtimes, sensitivity, specificity, 
-                     betas = NULL, twogroup = NULL, pmiss = 0, design = "MCAR",
+                     betas = NULL, twogroup = NULL, pmiss = 0, pcensor = 0, design = "MCAR",
                      negpred = 1, time.varying = F) {
   
   #############################################################################
@@ -202,6 +205,24 @@ datasim <- function(N, blambda, testtimes, sensitivity, specificity,
     data <- data[keep, ]
   }
   
+  #############################################################################
+  # Apply censoring
+  ############################################################################# 
+  if (any(pcensor > 0)) {
+    if (length(pcensor) == 1) pcensor <- rep(pcensor, ntest)
+    pcensor <- c(pcensor, 1 - sum(pcensor))
+    ctimes <- c(testtimes, Inf)
+    data1 <- split(data, data$ID)
+    data1 <- lapply(data1, function(x) {
+      x$censortime <- sample(ctimes, 1, prob = pcensor)
+      x
+    })
+    data1 <- unsplit(data1, data$ID)
+    data1 <- subset(data1, testtime < censortime)
+    drop <- which(names(data1) == "censortime")
+    data <- data1[, -drop]    
+  }
+
   #############################################################################
   # Add baseline information for time-varying model
   ############################################################################# 

@@ -87,6 +87,50 @@ double missprobntfp(IntegerVector result, NumericVector pmiss) {
   return prob;
 }
 
+IntegerVector copyvec(IntegerVector x, int end) {
+  IntegerVector y(end + 1);
+  for (int i = 0; i <= end; i++) y[i] = x[i];
+  return y;
+}
+
+NumericVector copyvec(NumericVector x, int end) {
+  NumericVector y(end + 1);
+  for (int i = 0; i <= end; i++) y[i] = x[i];
+  return y;
+}
+
+double missprobcensor(IntegerVector result, NumericVector pmiss, NumericVector censor) {
+  int J = result.size(), i = J - 1;
+  double prob = 0, p;
+  IntegerVector subresult;
+  NumericVector subpmiss;
+  prob += (1 - sum(censor)) * missprob(result, pmiss);
+  while (result[i] == 2) {
+    p = censor[i];
+    i -= 1;
+    subresult = copyvec(result, i);
+    subpmiss = copyvec(pmiss, i);
+    prob += p * missprob(subresult, subpmiss);
+  }
+  return prob;
+}
+
+double missprobntfpcensor(IntegerVector result, NumericVector pmiss, NumericVector censor) {
+  int J = result.size(), i = J - 1;
+  double prob = 0, p;
+  IntegerVector subresult;
+  NumericVector subpmiss;
+  prob += (1 - sum(censor)) * missprobntfp(result, pmiss);
+  while (result[i] == 2) {
+    p = censor[i];
+    i -= 1;
+    subresult = copyvec(result, i);
+    subpmiss = copyvec(pmiss, i);
+    prob += p * missprobntfp(subresult, subpmiss);
+  }
+  return prob;
+}
+
 NumericVector convlik(IntegerVector result, double phi1, double phi0) {
   int J = result.size();
   int i, k;
@@ -125,7 +169,7 @@ NumericMatrix powerdmat1(double phi1, double phi0, int J, double negpred) {
 }
 
 // [[Rcpp::export]]
-List powerdmat2(double phi1, double phi0, int J, double negpred, NumericVector pmiss) {
+List powerdmat2(double phi1, double phi0, int J, double negpred, NumericVector pmiss, NumericVector censor) {
    int i, j, nsub = pow(3, J);
    IntegerVector modv(J), result(J);
    NumericMatrix Cm(nsub, J+1), Dm(nsub, J+1); 
@@ -135,7 +179,7 @@ List powerdmat2(double phi1, double phi0, int J, double negpred, NumericVector p
    }
    for (i = 0; i < nsub; i++) {
      result = convert1(i, modv);
-     prob[i] = missprob(result, pmiss);
+     prob[i] = missprobcensor(result, pmiss, censor);
      Cm(i, _) = convlik(result, phi1, phi0);
    }        
    for (i = 0; i < nsub; i++) {
@@ -166,14 +210,14 @@ NumericMatrix powerdmat3(double phi1, double phi0, int J, double negpred) {
 }
 
 // [[Rcpp::export]]
-List powerdmat4(double phi1, double phi0, int J, double negpred, NumericVector pmiss) {
+List powerdmat4(double phi1, double phi0, int J, double negpred, NumericVector pmiss, NumericVector censor) {
    int i, j, nsub = pow(2, J+1) - 1;
    IntegerVector result(J);
    NumericMatrix Cm(nsub, J+1), Dm(nsub, J+1); 
    NumericVector prob(nsub); 
    for (i = 0; i < nsub; i++) {
      result = convert3(i, J);
-     prob[i] = missprobntfp(result, pmiss);
+     prob[i] = missprobntfpcensor(result, pmiss, censor);
      Cm(i, _) = convlik(result, phi1, phi0);
    }        
    for (i = 0; i < nsub; i++) {

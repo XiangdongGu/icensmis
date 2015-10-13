@@ -13,6 +13,7 @@ Description: We consider studies in which information from error-prone
     estimate the survival distribution and covariate effects. We also provide
     functions for power and sample size calculations for this setting.
 License: GPL (>= 2)
-Imports:
+Imports: 
     Rcpp (>= 0.11.0)
 LinkingTo: Rcpp
+Suggests: testthat

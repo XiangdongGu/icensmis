@@ -24,6 +24,9 @@
 #'   probabilities of each test being randomly missing at each test time. If 
 #'   pmiss is a single value, then each test is assumed to have an identical 
 #'   probability of missingness.
+#' @param pcensor a value or a vector (must have same length as testtimes) of
+#' the probability of censoring at each visit, assuming censoring process
+#' is independent on other missing mechanisms.
 #' @param design missing mechanism: "MCAR" or "NTFP".
 #' @param negpred baseline negative predictive value, i.e. the probability of 
 #'   being truely disease free for those who were tested (reported) as disease 
@@ -93,86 +96,87 @@
 #' @export
 
 icpower <- function(HR, sensitivity, specificity, survivals, N = NULL, power = NULL,
-                   rho = 0.5, alpha = 0.05, pmiss = 0, design = "MCAR", negpred = 1) {
-
-   	## Basic input check
-   	if (!(HR>0)) stop("Check input for HR")
-   	if (!(specificity<=1 & specificity>0)) stop("Check input for specificity")
-   	if (sum(diff(survivals)>0)>0 | sum(survivals<0)>0 | sum(survivals>1)>0) stop("Check input for survivals")
-   	if (rho<0 | rho>1) stop("Check input for rho")
-   	if (alpha<0 | alpha>1) stop("Check input for alpha")
-   	if (any(pmiss < 0) | any(pmiss > 1)) stop("Check input for pmiss")
-   	if ((is.null(N)+is.null(power))!=1) stop("Need input for one and only one of power and N")
-   	if (!is.null(power)) {if (any(power > 1) | any(power < 0)) stop("Check input for power")}
-   	if (length(pmiss)!=1 & length(pmiss)!=length(survivals))
-       stop("length of pmiss must be 1 or same length as survivals")
-  	if (!(design %in% c("MCAR", "NTFP"))) stop("invalid design")
-  	if (negpred<0 | negpred>1) stop("Check input for negpred")  	
-
-  	## Use dedicated function for perfect test, so when perfect test use alternative instead
-   	if (sensitivity==1 & specificity==1) {
-   		cat("For perfect test, use icpowerpf for improved computational efficiency... \n \n")
-   		design <- "NTFP"
-   	}
-   	
-	miss 	<- any(pmiss!=0)  
-   	beta  	<- log(HR)
-   	J 		<- length(survivals)
-   	Surv  	<- c(1, survivals)  	                   	
-	if (length(pmiss)==1) pmiss <- rep(pmiss, J)
-	
-	if (design=="MCAR" & !miss) {	
-		Dm <- powerdmat1(sensitivity, specificity, J, negpred)
-		prob <- 1	
-	} else if (design=="MCAR" & miss) {
-		Dm <- powerdmat2(sensitivity, specificity, J, negpred, pmiss)
-		prob <- Dm[[2]]
-		Dm <- Dm[[1]]
-	} else if (design=="NTFP" & !miss) {
-		Dm <- powerdmat3(sensitivity, specificity, J, negpred)
-		prob <- 1
-	} else if (design=="NTFP" & miss) {
-		Dm <- powerdmat4(sensitivity, specificity, J, negpred, pmiss)
-		prob <- Dm[[2]]
-		Dm <- Dm[[1]]
-	}
-
-	I1 <- I2 <- matrix(NA, nrow=J+1, ncol=J+1)
-	
-	## Group 1 information matrix
-    DS         	<- c(prob/(Dm%*%Surv))
-    I1[1, ] 	<- I1[, 1] 	<- 0
-    I1[-1, -1] 	<- (t(DS*Dm)%*%Dm)[-1, -1]
-    
-    ## Group 2 information matrix	
-	a 		<- HR
-	Surv2 	<- Surv^a
-	Surv21	<- Surv^(a-1)
-	lSurv 	<- log(Surv)
-	DS2		<- c(1/(Dm%*%Surv2))
-	
-	I2[1, 1] <- sum(prob*((Dm%*%(Surv2*lSurv))^2*a^2*DS2 - Dm%*%(Surv2*lSurv*(1+a*lSurv))*a))
-	I2[-1, -1] <- (t(Dm*prob*DS2)%*%Dm*outer(Surv21, Surv21, "*")*a^2)[-1, -1] 	
-	I2[cbind(2:(J+1), 2:(J+1))] <- colSums(prob*t(Surv21^2*t(Dm^2*DS2)*a^2 - t(Dm)*Surv^(a-2)*a*(a-1)))[-1]	
-	I2[1, 2:(J+1)] <- I2[2:(J+1), 1] <- colSums(prob*t(t(c(Dm%*%(Surv2*lSurv))*DS2*Dm)*Surv21*a^2-t(Dm)*Surv21*(1+a*lSurv)*a))[-1]
-	
-	If       <- rho*I1+(1-rho)*I2
-   	inv.If   <- solve(If)
-   	beta.var <- inv.If[1]
-
-   	## Calculate Sample size or Power
-   	if (!is.null(power)) {
-    	N  <- ceiling((qnorm(1-alpha/2)+qnorm(power))^2*beta.var/beta^2)
-        N1 <- round(rho*N)
-        N2 <- N-N1
-        return(list(result=data.frame(N,N1,N2,power), I1=I1, I2=I2))
-   	} else {
-        beta.varN <- beta.var/N
-        za    <- qnorm(1-alpha/2)
-        zb    <- beta/sqrt(beta.varN)
-        power <- pnorm(-za,zb,1)+1-pnorm(za,zb,1)        
-        N1 <- round(rho*N)
-        N2 <- N-N1        
-        return(list(result=data.frame(N,N1,N2,power), I1=I1, I2=I2))
-  	}
+                    rho = 0.5, alpha = 0.05, pmiss = 0, pcensor = 0, design = "MCAR", negpred = 1) {
+  
+  ## Basic input check
+  if (!(HR>0)) stop("Check input for HR")
+  if (!(specificity<=1 & specificity>0)) stop("Check input for specificity")
+  if (sum(diff(survivals)>0)>0 | sum(survivals<0)>0 | sum(survivals>1)>0) stop("Check input for survivals")
+  if (rho<0 | rho>1) stop("Check input for rho")
+  if (alpha<0 | alpha>1) stop("Check input for alpha")
+  if (any(pmiss < 0) | any(pmiss > 1)) stop("Check input for pmiss")
+  if ((is.null(N)+is.null(power))!=1) stop("Need input for one and only one of power and N")
+  if (!is.null(power)) {if (any(power > 1) | any(power < 0)) stop("Check input for power")}
+  if (length(pmiss)!=1 & length(pmiss)!=length(survivals))
+    stop("length of pmiss must be 1 or same length as survivals")
+  if (!(design %in% c("MCAR", "NTFP"))) stop("invalid design")
+  if (negpred<0 | negpred>1) stop("Check input for negpred")  	
+  
+  ## Use dedicated function for perfect test, so when perfect test use alternative instead
+  if (sensitivity==1 & specificity==1) {
+    cat("For perfect test, use icpowerpf for improved computational efficiency... \n \n")
+    design <- "NTFP"
+  }
+  
+  miss 	<- any(pmiss != 0) || any(pcensor != 0)
+  beta  	<- log(HR)
+  J 		<- length(survivals)
+  Surv  	<- c(1, survivals)  	                   	
+  if (length(pmiss)==1) pmiss <- rep(pmiss, J)
+  if (length(pcensor) == 1) pcensor <- rep(pcensor, J)
+  
+  if (design=="MCAR" & !miss) {	
+    Dm <- powerdmat1(sensitivity, specificity, J, negpred)
+    prob <- 1	
+  } else if (design=="MCAR" & miss) {
+    Dm <- powerdmat2(sensitivity, specificity, J, negpred, pmiss, pcensor)
+    prob <- Dm[[2]]
+    Dm <- Dm[[1]]
+  } else if (design=="NTFP" & !miss) {
+    Dm <- powerdmat3(sensitivity, specificity, J, negpred)
+    prob <- 1
+  } else if (design=="NTFP" & miss) {
+    Dm <- powerdmat4(sensitivity, specificity, J, negpred, pmiss, pcensor)
+    prob <- Dm[[2]]
+    Dm <- Dm[[1]]
+  }
+  
+  I1 <- I2 <- matrix(NA, nrow=J+1, ncol=J+1)
+  
+  ## Group 1 information matrix
+  DS         	<- c(prob/(Dm%*%Surv))
+  I1[1, ] 	<- I1[, 1] 	<- 0
+  I1[-1, -1] 	<- (t(DS*Dm)%*%Dm)[-1, -1]
+  
+  ## Group 2 information matrix	
+  a 		<- HR
+  Surv2 	<- Surv^a
+  Surv21	<- Surv^(a-1)
+  lSurv 	<- log(Surv)
+  DS2		<- c(1/(Dm%*%Surv2))
+  
+  I2[1, 1] <- sum(prob*((Dm%*%(Surv2*lSurv))^2*a^2*DS2 - Dm%*%(Surv2*lSurv*(1+a*lSurv))*a))
+  I2[-1, -1] <- (t(Dm*prob*DS2)%*%Dm*outer(Surv21, Surv21, "*")*a^2)[-1, -1] 	
+  I2[cbind(2:(J+1), 2:(J+1))] <- colSums(prob*t(Surv21^2*t(Dm^2*DS2)*a^2 - t(Dm)*Surv^(a-2)*a*(a-1)))[-1]	
+  I2[1, 2:(J+1)] <- I2[2:(J+1), 1] <- colSums(prob*t(t(c(Dm%*%(Surv2*lSurv))*DS2*Dm)*Surv21*a^2-t(Dm)*Surv21*(1+a*lSurv)*a))[-1]
+  
+  If       <- rho*I1+(1-rho)*I2
+  inv.If   <- solve(If)
+  beta.var <- inv.If[1]
+  
+  ## Calculate Sample size or Power
+  if (!is.null(power)) {
+    N  <- ceiling((qnorm(1-alpha/2)+qnorm(power))^2*beta.var/beta^2)
+    N1 <- round(rho*N)
+    N2 <- N-N1
+    return(list(result=data.frame(N,N1,N2,power), I1=I1, I2=I2))
+  } else {
+    beta.varN <- beta.var/N
+    za    <- qnorm(1-alpha/2)
+    zb    <- beta/sqrt(beta.varN)
+    power <- pnorm(-za,zb,1)+1-pnorm(za,zb,1)        
+    N1 <- round(rho*N)
+    N2 <- N-N1        
+    return(list(result=data.frame(N,N1,N2,power), I1=I1, I2=I2))
+  }
 }

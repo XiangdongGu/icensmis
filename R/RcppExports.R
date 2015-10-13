@@ -165,15 +165,15 @@ powerdmat1 <- function(phi1, phi0, J, negpred) {
     .Call('icensmis_powerdmat1', PACKAGE = 'icensmis', phi1, phi0, J, negpred)
 }
 
-powerdmat2 <- function(phi1, phi0, J, negpred, pmiss) {
-    .Call('icensmis_powerdmat2', PACKAGE = 'icensmis', phi1, phi0, J, negpred, pmiss)
+powerdmat2 <- function(phi1, phi0, J, negpred, pmiss, censor) {
+    .Call('icensmis_powerdmat2', PACKAGE = 'icensmis', phi1, phi0, J, negpred, pmiss, censor)
 }
 
 powerdmat3 <- function(phi1, phi0, J, negpred) {
     .Call('icensmis_powerdmat3', PACKAGE = 'icensmis', phi1, phi0, J, negpred)
 }
 
-powerdmat4 <- function(phi1, phi0, J, negpred, pmiss) {
-    .Call('icensmis_powerdmat4', PACKAGE = 'icensmis', phi1, phi0, J, negpred, pmiss)
+powerdmat4 <- function(phi1, phi0, J, negpred, pmiss, censor) {
+    .Call('icensmis_powerdmat4', PACKAGE = 'icensmis', phi1, phi0, J, negpred, pmiss, censor)
 }
 
