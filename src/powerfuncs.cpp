@@ -1,6 +1,15 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+int pow(int base, int exp) {
+  int result = 1;
+  while (exp > 0) {
+    result = result * base;
+    exp -= 1;
+  }
+  return result;
+}
+
 double sprob(int result, bool occur, double phi1, double phi0) {
   if (result == 0) {
     if (occur) {
@@ -42,7 +51,8 @@ IntegerVector convert2(int n, int J) {
 }
 
 IntegerVector convert3(int n, int J) {
-  int p = int(log2(n+1)), k = (n+1) % int(pow(2, p)), i;
+  int i, p = int(log2(double(n+1)));
+  int k = (n+1) % pow(2, p);
   IntegerVector result(J), modv(p);
   for (i = 0; i < p; i++) {
       modv[i] = pow(2, p - 1 - i);
@@ -228,4 +238,3 @@ List powerdmat4(double phi1, double phi0, int J, double negpred, NumericVector p
    }
    return List::create(Dm, prob);
 }
-
