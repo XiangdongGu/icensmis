@@ -61,6 +61,10 @@ Xmat_decode <- function(Xmat) {
     invisible(.Call('icensmis_Xmat_decode', PACKAGE = 'icensmis', Xmat))
 }
 
+Xmat_decode3 <- function(Xmat) {
+    invisible(.Call('icensmis_Xmat_decode3', PACKAGE = 'icensmis', Xmat))
+}
+
 Xmat_norm <- function(Xmat) {
     .Call('icensmis_Xmat_norm', PACKAGE = 'icensmis', Xmat)
 }

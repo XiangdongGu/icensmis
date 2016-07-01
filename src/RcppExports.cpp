@@ -227,6 +227,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// Xmat_decode3
+void Xmat_decode3(RawMatrix Xmat);
+RcppExport SEXP icensmis_Xmat_decode3(SEXP XmatSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< RawMatrix >::type Xmat(XmatSEXP);
+    Xmat_decode3(Xmat);
+    return R_NilValue;
+END_RCPP
+}
 // Xmat_norm
 NumericMatrix Xmat_norm(RawMatrix Xmat);
 RcppExport SEXP icensmis_Xmat_norm(SEXP XmatSEXP) {

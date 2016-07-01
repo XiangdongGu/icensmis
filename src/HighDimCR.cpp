@@ -505,6 +505,8 @@ NumericVector gamma_mean(IntegerVector outgamma, int start) {
 ///                                                                                    ////
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Decode Xmat
+// 0: missing, 1: aa, 2:Aa, 3: AA
+
 // 3 -> 0, 2 -> 1
 // [[Rcpp::export]]
 void Xmat_decode(RawMatrix Xmat) {
@@ -515,6 +517,23 @@ void Xmat_decode(RawMatrix Xmat) {
         Xmat(i, j) = 0;
       } else if (Xmat(i, j)==2) {
         Xmat(i, j) = 1;
+      }
+    }
+  }
+}
+
+// 3->0, 1->2, 2->1
+// [[Rcpp::export]]
+void Xmat_decode3(RawMatrix Xmat) {
+  int nsub=Xmat.nrow(), nbeta=Xmat.ncol();
+  for (int i=0; i<nsub; i++) {
+    for (int j=0; j<nbeta; j++) {
+      if (Xmat(i, j) == 3) {
+        Xmat(i, j) = 0;
+      } else if (Xmat(i, j) == 2) {
+        Xmat(i, j) = 1;
+      } else if (Xmat(i, j) == 1) {
+        Xmat(i, j) = 2;
       }
     }
   }
