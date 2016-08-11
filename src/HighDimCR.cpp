@@ -754,11 +754,18 @@ NumericVector iclasso_pw_raw(NumericMatrix Dm, RawMatrix Xmat, NumericMatrix sdv
 }
 
 
+// void updateeta(NumericVector eta, NumericVector beta, int j, double newbeta,
+//                RawMatrix Xmat, NumericVector sdv, NumericVector neweta) {
+//   int nsub = Xmat.nrow();
+//   for (int i=0; i<nsub; i++) 
+//     neweta[i] = eta[i] + sdv(Xmat(i, j), j)*(newbeta - beta[j]);
+// }
+
 void updateeta(NumericVector eta, NumericVector beta, int j, double newbeta,
-               RawMatrix Xmat, NumericVector sdv, NumericVector neweta) {
+               RawMatrix Xmat, NumericVector neweta) {
   int nsub = Xmat.nrow();
   for (int i=0; i<nsub; i++) 
-    neweta[i] = eta[i] + sdv(Xmat(i, j), j)*(newbeta - beta[j]);
+    neweta[i] = eta[i] + Xmat(i, j)*(newbeta - beta[j]);
 }
 
 // [[Rcpp::export]]
@@ -786,7 +793,8 @@ IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1
     j = nbeta*R::runif(0.0, 1.0);
     newgamma = 1 - gamma[j];
     newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
-    updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
+    // updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
+    updateeta(eta, beta, j, newbeta, Xmat, neweta);
     newlik = -loglik_lamb(par, Dm, neweta);
     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
     deltapost = newlik - lik + deltagamma;
@@ -806,7 +814,8 @@ IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1
       if (gamma[p] == 1) {
         if (R::runif(0.0, 1.0) < psample) {
           newbeta = R::rnorm(beta[p], b);
-          updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
+          // updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
+          updateeta(eta, beta, p, newbeta, Xmat, neweta);
           newlik = -loglik_lamb(par, Dm, neweta);
           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
           deltapost = newlik - lik + deltabeta;
@@ -865,7 +874,8 @@ IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector bre
     j = nbeta*R::runif(0.0, 1.0);
     newgamma = 1 - gamma[j];
     newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
-    updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
+    // updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
+    updateeta(eta, beta, j, newbeta, Xmat, neweta);
     newlik = -loglik_pw(par, Dm, neweta, breaks);
     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
     deltapost = newlik - lik + deltagamma;
@@ -885,7 +895,8 @@ IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector bre
       if (gamma[p] == 1) {
         if (R::runif(0.0, 1.0) < psample) {
           newbeta = R::rnorm(beta[p], b);
-          updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
+          // updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
+          updateeta(eta, beta, p, newbeta, Xmat, neweta);
           newlik = -loglik_pw(par, Dm, neweta, breaks);
           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
           deltapost = newlik - lik + deltabeta;
