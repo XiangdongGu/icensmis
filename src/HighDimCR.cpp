@@ -929,3 +929,21 @@ IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector bre
   return outgamma;    
 }    
 
+// [[Rcpp::export]]
+void matrixStandardize(NumericMatrix X) {
+  int i, j, I = X.nrow(), J = X.ncol();
+  double m, s;
+  for (j = 0; j < J; j++) {
+    m = 0;
+    s = 0;
+    for (i = 0; i < I; i++) {
+      m += X(i, j);
+      s += X(i, j) * X(i, j);
+    }
+    m = m / I;
+    s = std::sqrt((s - m * m * I) / (I - 1));
+    for (i = 0; i < I; i++) {
+      X(i, j) = (X(i, j) - m) / s;
+    }
+  }
+} 
