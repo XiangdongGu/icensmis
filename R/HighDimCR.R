@@ -1,5 +1,12 @@
 fitsurv <- function(parm, Dm, eta) {
-  optim(parm, loglik_lamb, gradlik_lamb, method="BFGS", Dm=Dm, eta=eta)$par
+  q <- try(optim(parm, loglik_lamb, gradlik_lamb, method="BFGS", Dm=Dm, eta=eta), silent = TRUE)
+  if (inherits(q, "try-error")) {
+    q <- try(optim(rnorm(length(parm), 0, 0.2), loglik_lamb, gradlik_lamb, method="BFGS", Dm=Dm, eta=eta), silent = TRUE)
+  }
+  if (inherits(q, "try-error")) {
+    return(parm)
+  }
+  q$par
 }
 
 fitsurv_pw <- function(parm, Dm, eta, breaks) {
