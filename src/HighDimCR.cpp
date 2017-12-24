@@ -340,7 +340,7 @@ IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1
   NumericVector beta(nbeta, 0.0);
   NumericVector eta(nsub, 0.0);
   NumericVector neweta(nsub);
-  NumericVector par(J);
+  NumericVector par(J), newpar(J);
   for (i=0; i<J; i++) par[i] = log(-log(initsurv)/J);
   par = fitsurv(par, Dm, eta);
   double lik = -loglik_lamb(par, Dm, eta);
@@ -371,21 +371,25 @@ IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1
     for (int p = 0; p < nbeta; p++) {
       if (gamma[p] == 1) {
         if (R::runif(0.0, 1.0) < psample) {
+          // propose a new beta
           newbeta = R::rnorm(beta[p], b);
           updateeta(eta, beta, p, newbeta, Xmat, neweta);
-          newlik = -loglik_lamb(par, Dm, neweta);
+          // get the optimized par
+          newpar = fitsurv(par, Dm, neweta);
+          newlik = -loglik_lamb(newpar, Dm, neweta);
           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
           deltapost = newlik - lik + deltabeta;
           if (log(R::runif(0.0, 1.0)) < deltapost) {
             lik = newlik;
             for (k=0; k<nsub; k++) eta[k] = neweta[k];
             beta[p] = newbeta;
+            par = newpar;
           }            
         }
       }
     }
     // update lambda
-    par = fitsurv(par, Dm, eta);
+    //par = fitsurv(par, Dm, eta);
     //update omega
     nselect = 0;
     for (k=0; k<nbeta; k++) nselect += gamma[k]; 
@@ -418,7 +422,7 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
   NumericVector beta(nbeta, 0.0);
   NumericVector eta(nsub, 0.0);
   NumericVector neweta(nsub);
-  NumericVector par(JS);
+  NumericVector par(JS), newpar(JS);
   for (i=0; i<JS; i++) par[i] = log(-log(initsurv)/J);
   par = fitsurv_pw(par, Dm, eta, breaks);
   double lik = -loglik_pw(par, Dm, eta, breaks);
@@ -451,19 +455,22 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
         if (R::runif(0.0, 1.0) < psample) {
           newbeta = R::rnorm(beta[p], b);
           updateeta(eta, beta, p, newbeta, Xmat, neweta);
-          newlik = -loglik_pw(par, Dm, neweta, breaks);
+          // optimized par
+          newpar = fitsurv_pw(par, Dm, neweta, breaks);
+          newlik = -loglik_pw(newpar, Dm, neweta, breaks);
           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
           deltapost = newlik - lik + deltabeta;
           if (log(R::runif(0.0, 1.0)) < deltapost) {
             lik = newlik;
             for (k=0; k<nsub; k++) eta[k] = neweta[k];
             beta[p] = newbeta;
+            newpar = par;
           }            
         }
       }
     }
     // update lambda
-    par = fitsurv_pw(par, Dm, eta, breaks);
+    //par = fitsurv_pw(par, Dm, eta, breaks);
     //update omega
     nselect = 0;
     for (k=0; k<nbeta; k++) nselect += gamma[k]; 
@@ -781,7 +788,7 @@ IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1
   NumericVector beta(nbeta, 0.0);
   NumericVector eta(nsub, 0.0);
   NumericVector neweta(nsub);
-  NumericVector par(J);
+  NumericVector par(J), newpar(J);
   for (i=0; i<J; i++) par[i] = log(-log(initsurv)/J);
   par = fitsurv(par, Dm, eta);
   double lik = -loglik_lamb(par, Dm, eta);
@@ -816,19 +823,22 @@ IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1
           newbeta = R::rnorm(beta[p], b);
           // updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
           updateeta(eta, beta, p, newbeta, Xmat, neweta);
-          newlik = -loglik_lamb(par, Dm, neweta);
+          // new optimized par
+          newpar = fitsurv(par, Dm, neweta);
+          newlik = -loglik_lamb(newpar, Dm, neweta);
           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
           deltapost = newlik - lik + deltabeta;
           if (log(R::runif(0.0, 1.0)) < deltapost) {
             lik = newlik;
             for (k=0; k<nsub; k++) eta[k] = neweta[k];
             beta[p] = newbeta;
+            newpar = par;
           }            
         }
       }
     }
     // update lambda
-    par = fitsurv(par, Dm, eta);
+    //par = fitsurv(par, Dm, eta);
     //update omega
     nselect = 0;
     for (k=0; k<nbeta; k++) nselect += gamma[k]; 
@@ -862,7 +872,7 @@ IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector bre
   NumericVector beta(nbeta, 0.0);
   NumericVector eta(nsub, 0.0);
   NumericVector neweta(nsub);
-  NumericVector par(JS);
+  NumericVector par(JS), newpar(JS);
   for (i=0; i<JS; i++) par[i] = log(-log(initsurv)/J);
   par = fitsurv_pw(par, Dm, eta, breaks);
   double lik = -loglik_pw(par, Dm, eta, breaks);
@@ -897,19 +907,22 @@ IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector bre
           newbeta = R::rnorm(beta[p], b);
           // updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
           updateeta(eta, beta, p, newbeta, Xmat, neweta);
-          newlik = -loglik_pw(par, Dm, neweta, breaks);
+          // get the optimized par
+          newpar = fitsurv_pw(par, Dm, neweta, breaks);
+          newlik = -loglik_pw(newpar, Dm, neweta, breaks);
           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
           deltapost = newlik - lik + deltabeta;
           if (log(R::runif(0.0, 1.0)) < deltapost) {
             lik = newlik;
             for (k=0; k<nsub; k++) eta[k] = neweta[k];
             beta[p] = newbeta;
+            par = newpar;
           }            
         }
       }
     }
     // update lambda
-    par = fitsurv_pw(par, Dm, eta, breaks);
+    //par = fitsurv_pw(par, Dm, eta, breaks);
     //update omega
     nselect = 0;
     for (k=0; k<nbeta; k++) nselect += gamma[k]; 

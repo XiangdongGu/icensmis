@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // dmat
 NumericMatrix dmat(NumericVector id, NumericVector time, IntegerVector result, double phi1, double phi0, double negpred);
-RcppExport SEXP icensmis_dmat(SEXP idSEXP, SEXP timeSEXP, SEXP resultSEXP, SEXP phi1SEXP, SEXP phi0SEXP, SEXP negpredSEXP) {
+RcppExport SEXP _icensmis_dmat(SEXP idSEXP, SEXP timeSEXP, SEXP resultSEXP, SEXP phi1SEXP, SEXP phi0SEXP, SEXP negpredSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,7 +23,7 @@ END_RCPP
 }
 // getrids
 IntegerVector getrids(NumericVector id, int nsub);
-RcppExport SEXP icensmis_getrids(SEXP idSEXP, SEXP nsubSEXP) {
+RcppExport SEXP _icensmis_getrids(SEXP idSEXP, SEXP nsubSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -35,7 +35,7 @@ END_RCPP
 }
 // timeMat
 NumericMatrix timeMat(int nsub, int J, NumericVector time, NumericVector utime, NumericMatrix Xmat);
-RcppExport SEXP icensmis_timeMat(SEXP nsubSEXP, SEXP JSEXP, SEXP timeSEXP, SEXP utimeSEXP, SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_timeMat(SEXP nsubSEXP, SEXP JSEXP, SEXP timeSEXP, SEXP utimeSEXP, SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -50,7 +50,7 @@ END_RCPP
 }
 // loglik_lamb
 double loglik_lamb(NumericVector par, NumericMatrix Dm, NumericVector eta);
-RcppExport SEXP icensmis_loglik_lamb(SEXP parSEXP, SEXP DmSEXP, SEXP etaSEXP) {
+RcppExport SEXP _icensmis_loglik_lamb(SEXP parSEXP, SEXP DmSEXP, SEXP etaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -63,7 +63,7 @@ END_RCPP
 }
 // gradlik_lamb
 NumericVector gradlik_lamb(NumericVector par, NumericMatrix Dm, NumericVector eta);
-RcppExport SEXP icensmis_gradlik_lamb(SEXP parSEXP, SEXP DmSEXP, SEXP etaSEXP) {
+RcppExport SEXP _icensmis_gradlik_lamb(SEXP parSEXP, SEXP DmSEXP, SEXP etaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -76,7 +76,7 @@ END_RCPP
 }
 // loglik_pw
 double loglik_pw(NumericVector par, NumericMatrix Dm, NumericVector eta, IntegerVector breaks);
-RcppExport SEXP icensmis_loglik_pw(SEXP parSEXP, SEXP DmSEXP, SEXP etaSEXP, SEXP breaksSEXP) {
+RcppExport SEXP _icensmis_loglik_pw(SEXP parSEXP, SEXP DmSEXP, SEXP etaSEXP, SEXP breaksSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -90,7 +90,7 @@ END_RCPP
 }
 // gradlik_pw
 NumericVector gradlik_pw(NumericVector par, NumericMatrix Dm, NumericVector eta, IntegerVector breaks);
-RcppExport SEXP icensmis_gradlik_pw(SEXP parSEXP, SEXP DmSEXP, SEXP etaSEXP, SEXP breaksSEXP) {
+RcppExport SEXP _icensmis_gradlik_pw(SEXP parSEXP, SEXP DmSEXP, SEXP etaSEXP, SEXP breaksSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -104,7 +104,7 @@ END_RCPP
 }
 // maxlambda
 double maxlambda(NumericMatrix Dm, NumericMatrix Xmat, NumericVector parm, Function fitsurv);
-RcppExport SEXP icensmis_maxlambda(SEXP DmSEXP, SEXP XmatSEXP, SEXP parmSEXP, SEXP fitsurvSEXP) {
+RcppExport SEXP _icensmis_maxlambda(SEXP DmSEXP, SEXP XmatSEXP, SEXP parmSEXP, SEXP fitsurvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -118,7 +118,7 @@ END_RCPP
 }
 // iclasso
 NumericVector iclasso(NumericMatrix Dm, NumericMatrix Xmat, NumericVector parmi, double lambda, Function fitsurv, double tol);
-RcppExport SEXP icensmis_iclasso(SEXP DmSEXP, SEXP XmatSEXP, SEXP parmiSEXP, SEXP lambdaSEXP, SEXP fitsurvSEXP, SEXP tolSEXP) {
+RcppExport SEXP _icensmis_iclasso(SEXP DmSEXP, SEXP XmatSEXP, SEXP parmiSEXP, SEXP lambdaSEXP, SEXP fitsurvSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -134,7 +134,7 @@ END_RCPP
 }
 // maxlambda_pw
 double maxlambda_pw(NumericMatrix Dm, NumericMatrix Xmat, NumericVector parm, IntegerVector breaks, Function fitsurv_pw);
-RcppExport SEXP icensmis_maxlambda_pw(SEXP DmSEXP, SEXP XmatSEXP, SEXP parmSEXP, SEXP breaksSEXP, SEXP fitsurv_pwSEXP) {
+RcppExport SEXP _icensmis_maxlambda_pw(SEXP DmSEXP, SEXP XmatSEXP, SEXP parmSEXP, SEXP breaksSEXP, SEXP fitsurv_pwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -149,7 +149,7 @@ END_RCPP
 }
 // iclasso_pw
 NumericVector iclasso_pw(NumericMatrix Dm, NumericMatrix Xmat, NumericVector parmi, IntegerVector breaks, double lambda, Function fitsurv_pw, double tol);
-RcppExport SEXP icensmis_iclasso_pw(SEXP DmSEXP, SEXP XmatSEXP, SEXP parmiSEXP, SEXP breaksSEXP, SEXP lambdaSEXP, SEXP fitsurv_pwSEXP, SEXP tolSEXP) {
+RcppExport SEXP _icensmis_iclasso_pw(SEXP DmSEXP, SEXP XmatSEXP, SEXP parmiSEXP, SEXP breaksSEXP, SEXP lambdaSEXP, SEXP fitsurv_pwSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -166,7 +166,7 @@ END_RCPP
 }
 // bayesmc
 IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1, double om2, int niter, double psample, double initsurv, int nreport, Function fitsurv);
-RcppExport SEXP icensmis_bayesmc(SEXP DmSEXP, SEXP XmatSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurvSEXP) {
+RcppExport SEXP _icensmis_bayesmc(SEXP DmSEXP, SEXP XmatSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -186,7 +186,7 @@ END_RCPP
 }
 // bayesmc_pw
 IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector breaks, double b, double om1, double om2, int niter, double psample, double initsurv, int nreport, Function fitsurv_pw);
-RcppExport SEXP icensmis_bayesmc_pw(SEXP DmSEXP, SEXP XmatSEXP, SEXP breaksSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurv_pwSEXP) {
+RcppExport SEXP _icensmis_bayesmc_pw(SEXP DmSEXP, SEXP XmatSEXP, SEXP breaksSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurv_pwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -207,7 +207,7 @@ END_RCPP
 }
 // gamma_mean
 NumericVector gamma_mean(IntegerVector outgamma, int start);
-RcppExport SEXP icensmis_gamma_mean(SEXP outgammaSEXP, SEXP startSEXP) {
+RcppExport SEXP _icensmis_gamma_mean(SEXP outgammaSEXP, SEXP startSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -219,7 +219,7 @@ END_RCPP
 }
 // Xmat_decode
 void Xmat_decode(RawMatrix Xmat);
-RcppExport SEXP icensmis_Xmat_decode(SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_Xmat_decode(SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< RawMatrix >::type Xmat(XmatSEXP);
@@ -229,7 +229,7 @@ END_RCPP
 }
 // Xmat_decode3
 void Xmat_decode3(RawMatrix Xmat);
-RcppExport SEXP icensmis_Xmat_decode3(SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_Xmat_decode3(SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< RawMatrix >::type Xmat(XmatSEXP);
@@ -239,7 +239,7 @@ END_RCPP
 }
 // Xmat_norm
 NumericMatrix Xmat_norm(RawMatrix Xmat);
-RcppExport SEXP icensmis_Xmat_norm(SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_Xmat_norm(SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -250,7 +250,7 @@ END_RCPP
 }
 // loglik_raw
 double loglik_raw(NumericVector parm, NumericMatrix Dm, RawMatrix Xmat, NumericMatrix sdv);
-RcppExport SEXP icensmis_loglik_raw(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP) {
+RcppExport SEXP _icensmis_loglik_raw(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -264,7 +264,7 @@ END_RCPP
 }
 // loglik_pw_raw
 double loglik_pw_raw(NumericVector parm, IntegerVector breaks, NumericMatrix Dm, RawMatrix Xmat, NumericMatrix sdv);
-RcppExport SEXP icensmis_loglik_pw_raw(SEXP parmSEXP, SEXP breaksSEXP, SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP) {
+RcppExport SEXP _icensmis_loglik_pw_raw(SEXP parmSEXP, SEXP breaksSEXP, SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -279,7 +279,7 @@ END_RCPP
 }
 // maxlambda_raw
 double maxlambda_raw(NumericMatrix Dm, RawMatrix Xmat, NumericMatrix sdv, NumericVector parm, Function fitsurv);
-RcppExport SEXP icensmis_maxlambda_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP, SEXP parmSEXP, SEXP fitsurvSEXP) {
+RcppExport SEXP _icensmis_maxlambda_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP, SEXP parmSEXP, SEXP fitsurvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -294,7 +294,7 @@ END_RCPP
 }
 // iclasso_raw
 NumericVector iclasso_raw(NumericMatrix Dm, RawMatrix Xmat, NumericMatrix sdv, NumericVector parmi, double lambda, Function fitsurv, double tol);
-RcppExport SEXP icensmis_iclasso_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP, SEXP parmiSEXP, SEXP lambdaSEXP, SEXP fitsurvSEXP, SEXP tolSEXP) {
+RcppExport SEXP _icensmis_iclasso_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP, SEXP parmiSEXP, SEXP lambdaSEXP, SEXP fitsurvSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -311,7 +311,7 @@ END_RCPP
 }
 // maxlambda_pw_raw
 double maxlambda_pw_raw(NumericMatrix Dm, RawMatrix Xmat, NumericMatrix sdv, NumericVector parm, IntegerVector breaks, Function fitsurv_pw);
-RcppExport SEXP icensmis_maxlambda_pw_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP, SEXP parmSEXP, SEXP breaksSEXP, SEXP fitsurv_pwSEXP) {
+RcppExport SEXP _icensmis_maxlambda_pw_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP, SEXP parmSEXP, SEXP breaksSEXP, SEXP fitsurv_pwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -327,7 +327,7 @@ END_RCPP
 }
 // iclasso_pw_raw
 NumericVector iclasso_pw_raw(NumericMatrix Dm, RawMatrix Xmat, NumericMatrix sdv, NumericVector parmi, IntegerVector breaks, double lambda, Function fitsurv_pw, double tol);
-RcppExport SEXP icensmis_iclasso_pw_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP, SEXP parmiSEXP, SEXP breaksSEXP, SEXP lambdaSEXP, SEXP fitsurv_pwSEXP, SEXP tolSEXP) {
+RcppExport SEXP _icensmis_iclasso_pw_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP sdvSEXP, SEXP parmiSEXP, SEXP breaksSEXP, SEXP lambdaSEXP, SEXP fitsurv_pwSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -345,7 +345,7 @@ END_RCPP
 }
 // bayesmc_raw
 IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1, double om2, int niter, double psample, double initsurv, int nreport, Function fitsurv);
-RcppExport SEXP icensmis_bayesmc_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurvSEXP) {
+RcppExport SEXP _icensmis_bayesmc_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -365,7 +365,7 @@ END_RCPP
 }
 // bayesmc_pw_raw
 IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector breaks, double b, double om1, double om2, int niter, double psample, double initsurv, int nreport, Function fitsurv_pw);
-RcppExport SEXP icensmis_bayesmc_pw_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP breaksSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurv_pwSEXP) {
+RcppExport SEXP _icensmis_bayesmc_pw_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP breaksSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurv_pwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -386,7 +386,7 @@ END_RCPP
 }
 // matrixStandardize
 void matrixStandardize(NumericMatrix X);
-RcppExport SEXP icensmis_matrixStandardize(SEXP XSEXP) {
+RcppExport SEXP _icensmis_matrixStandardize(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
@@ -396,7 +396,7 @@ END_RCPP
 }
 // loglikA0
 double loglikA0(NumericVector parm, NumericMatrix Dm);
-RcppExport SEXP icensmis_loglikA0(SEXP parmSEXP, SEXP DmSEXP) {
+RcppExport SEXP _icensmis_loglikA0(SEXP parmSEXP, SEXP DmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -408,7 +408,7 @@ END_RCPP
 }
 // gradlikA0
 NumericVector gradlikA0(NumericVector parm, NumericMatrix Dm);
-RcppExport SEXP icensmis_gradlikA0(SEXP parmSEXP, SEXP DmSEXP) {
+RcppExport SEXP _icensmis_gradlikA0(SEXP parmSEXP, SEXP DmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -420,7 +420,7 @@ END_RCPP
 }
 // loglikA
 double loglikA(NumericVector parm, NumericMatrix Dm, NumericMatrix Xmat);
-RcppExport SEXP icensmis_loglikA(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_loglikA(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -433,7 +433,7 @@ END_RCPP
 }
 // gradlikA
 NumericVector gradlikA(NumericVector parm, NumericMatrix Dm, NumericMatrix Xmat);
-RcppExport SEXP icensmis_gradlikA(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_gradlikA(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -446,7 +446,7 @@ END_RCPP
 }
 // loglikTA
 double loglikTA(NumericVector parm, NumericMatrix Dm, NumericMatrix TXmat);
-RcppExport SEXP icensmis_loglikTA(SEXP parmSEXP, SEXP DmSEXP, SEXP TXmatSEXP) {
+RcppExport SEXP _icensmis_loglikTA(SEXP parmSEXP, SEXP DmSEXP, SEXP TXmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -459,7 +459,7 @@ END_RCPP
 }
 // gradlikTA
 NumericVector gradlikTA(NumericVector parm, NumericMatrix Dm, NumericMatrix TXmat);
-RcppExport SEXP icensmis_gradlikTA(SEXP parmSEXP, SEXP DmSEXP, SEXP TXmatSEXP) {
+RcppExport SEXP _icensmis_gradlikTA(SEXP parmSEXP, SEXP DmSEXP, SEXP TXmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -472,7 +472,7 @@ END_RCPP
 }
 // loglikB0
 double loglikB0(NumericVector parm1, NumericMatrix Dm);
-RcppExport SEXP icensmis_loglikB0(SEXP parm1SEXP, SEXP DmSEXP) {
+RcppExport SEXP _icensmis_loglikB0(SEXP parm1SEXP, SEXP DmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -484,7 +484,7 @@ END_RCPP
 }
 // gradlikB0
 NumericVector gradlikB0(NumericVector parm1, NumericMatrix Dm);
-RcppExport SEXP icensmis_gradlikB0(SEXP parm1SEXP, SEXP DmSEXP) {
+RcppExport SEXP _icensmis_gradlikB0(SEXP parm1SEXP, SEXP DmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -496,7 +496,7 @@ END_RCPP
 }
 // loglikB
 double loglikB(NumericVector parm, NumericMatrix Dm, NumericMatrix Xmat);
-RcppExport SEXP icensmis_loglikB(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_loglikB(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -509,7 +509,7 @@ END_RCPP
 }
 // gradlikB
 NumericVector gradlikB(NumericVector parm, NumericMatrix Dm, NumericMatrix Xmat);
-RcppExport SEXP icensmis_gradlikB(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_gradlikB(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -522,7 +522,7 @@ END_RCPP
 }
 // loglikTB
 double loglikTB(NumericVector parm, NumericMatrix Dm, NumericMatrix TXmat);
-RcppExport SEXP icensmis_loglikTB(SEXP parmSEXP, SEXP DmSEXP, SEXP TXmatSEXP) {
+RcppExport SEXP _icensmis_loglikTB(SEXP parmSEXP, SEXP DmSEXP, SEXP TXmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -535,7 +535,7 @@ END_RCPP
 }
 // gradlikTB
 NumericVector gradlikTB(NumericVector parm, NumericMatrix Dm, NumericMatrix TXmat);
-RcppExport SEXP icensmis_gradlikTB(SEXP parmSEXP, SEXP DmSEXP, SEXP TXmatSEXP) {
+RcppExport SEXP _icensmis_gradlikTB(SEXP parmSEXP, SEXP DmSEXP, SEXP TXmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -548,7 +548,7 @@ END_RCPP
 }
 // loglikC0
 double loglikC0(NumericVector parm, NumericMatrix Dm);
-RcppExport SEXP icensmis_loglikC0(SEXP parmSEXP, SEXP DmSEXP) {
+RcppExport SEXP _icensmis_loglikC0(SEXP parmSEXP, SEXP DmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -560,7 +560,7 @@ END_RCPP
 }
 // gradlikC0
 NumericVector gradlikC0(NumericVector parm, NumericMatrix Dm);
-RcppExport SEXP icensmis_gradlikC0(SEXP parmSEXP, SEXP DmSEXP) {
+RcppExport SEXP _icensmis_gradlikC0(SEXP parmSEXP, SEXP DmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -572,7 +572,7 @@ END_RCPP
 }
 // loglikC
 double loglikC(NumericVector parm, NumericMatrix Dm, NumericMatrix Xmat);
-RcppExport SEXP icensmis_loglikC(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_loglikC(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -585,7 +585,7 @@ END_RCPP
 }
 // gradlikC
 NumericVector gradlikC(NumericVector parm, NumericMatrix Dm, NumericMatrix Xmat);
-RcppExport SEXP icensmis_gradlikC(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
+RcppExport SEXP _icensmis_gradlikC(SEXP parmSEXP, SEXP DmSEXP, SEXP XmatSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -598,7 +598,7 @@ END_RCPP
 }
 // powerdmat1
 NumericMatrix powerdmat1(double phi1, double phi0, int J, double negpred);
-RcppExport SEXP icensmis_powerdmat1(SEXP phi1SEXP, SEXP phi0SEXP, SEXP JSEXP, SEXP negpredSEXP) {
+RcppExport SEXP _icensmis_powerdmat1(SEXP phi1SEXP, SEXP phi0SEXP, SEXP JSEXP, SEXP negpredSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -612,7 +612,7 @@ END_RCPP
 }
 // powerdmat2
 List powerdmat2(double phi1, double phi0, int J, double negpred, NumericVector pmiss, NumericVector censor);
-RcppExport SEXP icensmis_powerdmat2(SEXP phi1SEXP, SEXP phi0SEXP, SEXP JSEXP, SEXP negpredSEXP, SEXP pmissSEXP, SEXP censorSEXP) {
+RcppExport SEXP _icensmis_powerdmat2(SEXP phi1SEXP, SEXP phi0SEXP, SEXP JSEXP, SEXP negpredSEXP, SEXP pmissSEXP, SEXP censorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -628,7 +628,7 @@ END_RCPP
 }
 // powerdmat3
 NumericMatrix powerdmat3(double phi1, double phi0, int J, double negpred);
-RcppExport SEXP icensmis_powerdmat3(SEXP phi1SEXP, SEXP phi0SEXP, SEXP JSEXP, SEXP negpredSEXP) {
+RcppExport SEXP _icensmis_powerdmat3(SEXP phi1SEXP, SEXP phi0SEXP, SEXP JSEXP, SEXP negpredSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -642,7 +642,7 @@ END_RCPP
 }
 // powerdmat4
 List powerdmat4(double phi1, double phi0, int J, double negpred, NumericVector pmiss, NumericVector censor);
-RcppExport SEXP icensmis_powerdmat4(SEXP phi1SEXP, SEXP phi0SEXP, SEXP JSEXP, SEXP negpredSEXP, SEXP pmissSEXP, SEXP censorSEXP) {
+RcppExport SEXP _icensmis_powerdmat4(SEXP phi1SEXP, SEXP phi0SEXP, SEXP JSEXP, SEXP negpredSEXP, SEXP pmissSEXP, SEXP censorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -655,4 +655,59 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(powerdmat4(phi1, phi0, J, negpred, pmiss, censor));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_icensmis_dmat", (DL_FUNC) &_icensmis_dmat, 6},
+    {"_icensmis_getrids", (DL_FUNC) &_icensmis_getrids, 2},
+    {"_icensmis_timeMat", (DL_FUNC) &_icensmis_timeMat, 5},
+    {"_icensmis_loglik_lamb", (DL_FUNC) &_icensmis_loglik_lamb, 3},
+    {"_icensmis_gradlik_lamb", (DL_FUNC) &_icensmis_gradlik_lamb, 3},
+    {"_icensmis_loglik_pw", (DL_FUNC) &_icensmis_loglik_pw, 4},
+    {"_icensmis_gradlik_pw", (DL_FUNC) &_icensmis_gradlik_pw, 4},
+    {"_icensmis_maxlambda", (DL_FUNC) &_icensmis_maxlambda, 4},
+    {"_icensmis_iclasso", (DL_FUNC) &_icensmis_iclasso, 6},
+    {"_icensmis_maxlambda_pw", (DL_FUNC) &_icensmis_maxlambda_pw, 5},
+    {"_icensmis_iclasso_pw", (DL_FUNC) &_icensmis_iclasso_pw, 7},
+    {"_icensmis_bayesmc", (DL_FUNC) &_icensmis_bayesmc, 10},
+    {"_icensmis_bayesmc_pw", (DL_FUNC) &_icensmis_bayesmc_pw, 11},
+    {"_icensmis_gamma_mean", (DL_FUNC) &_icensmis_gamma_mean, 2},
+    {"_icensmis_Xmat_decode", (DL_FUNC) &_icensmis_Xmat_decode, 1},
+    {"_icensmis_Xmat_decode3", (DL_FUNC) &_icensmis_Xmat_decode3, 1},
+    {"_icensmis_Xmat_norm", (DL_FUNC) &_icensmis_Xmat_norm, 1},
+    {"_icensmis_loglik_raw", (DL_FUNC) &_icensmis_loglik_raw, 4},
+    {"_icensmis_loglik_pw_raw", (DL_FUNC) &_icensmis_loglik_pw_raw, 5},
+    {"_icensmis_maxlambda_raw", (DL_FUNC) &_icensmis_maxlambda_raw, 5},
+    {"_icensmis_iclasso_raw", (DL_FUNC) &_icensmis_iclasso_raw, 7},
+    {"_icensmis_maxlambda_pw_raw", (DL_FUNC) &_icensmis_maxlambda_pw_raw, 6},
+    {"_icensmis_iclasso_pw_raw", (DL_FUNC) &_icensmis_iclasso_pw_raw, 8},
+    {"_icensmis_bayesmc_raw", (DL_FUNC) &_icensmis_bayesmc_raw, 10},
+    {"_icensmis_bayesmc_pw_raw", (DL_FUNC) &_icensmis_bayesmc_pw_raw, 11},
+    {"_icensmis_matrixStandardize", (DL_FUNC) &_icensmis_matrixStandardize, 1},
+    {"_icensmis_loglikA0", (DL_FUNC) &_icensmis_loglikA0, 2},
+    {"_icensmis_gradlikA0", (DL_FUNC) &_icensmis_gradlikA0, 2},
+    {"_icensmis_loglikA", (DL_FUNC) &_icensmis_loglikA, 3},
+    {"_icensmis_gradlikA", (DL_FUNC) &_icensmis_gradlikA, 3},
+    {"_icensmis_loglikTA", (DL_FUNC) &_icensmis_loglikTA, 3},
+    {"_icensmis_gradlikTA", (DL_FUNC) &_icensmis_gradlikTA, 3},
+    {"_icensmis_loglikB0", (DL_FUNC) &_icensmis_loglikB0, 2},
+    {"_icensmis_gradlikB0", (DL_FUNC) &_icensmis_gradlikB0, 2},
+    {"_icensmis_loglikB", (DL_FUNC) &_icensmis_loglikB, 3},
+    {"_icensmis_gradlikB", (DL_FUNC) &_icensmis_gradlikB, 3},
+    {"_icensmis_loglikTB", (DL_FUNC) &_icensmis_loglikTB, 3},
+    {"_icensmis_gradlikTB", (DL_FUNC) &_icensmis_gradlikTB, 3},
+    {"_icensmis_loglikC0", (DL_FUNC) &_icensmis_loglikC0, 2},
+    {"_icensmis_gradlikC0", (DL_FUNC) &_icensmis_gradlikC0, 2},
+    {"_icensmis_loglikC", (DL_FUNC) &_icensmis_loglikC, 3},
+    {"_icensmis_gradlikC", (DL_FUNC) &_icensmis_gradlikC, 3},
+    {"_icensmis_powerdmat1", (DL_FUNC) &_icensmis_powerdmat1, 4},
+    {"_icensmis_powerdmat2", (DL_FUNC) &_icensmis_powerdmat2, 6},
+    {"_icensmis_powerdmat3", (DL_FUNC) &_icensmis_powerdmat3, 4},
+    {"_icensmis_powerdmat4", (DL_FUNC) &_icensmis_powerdmat4, 6},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_icensmis(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
