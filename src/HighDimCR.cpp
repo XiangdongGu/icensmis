@@ -353,7 +353,8 @@ IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1
     newgamma = 1 - gamma[j];
     newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
     updateeta(eta, beta, j, newbeta, Xmat, neweta);
-    newlik = -loglik_lamb(par, Dm, neweta);
+    newpar = fitsurv(par, Dm, neweta);
+    newlik = -loglik_lamb(newpar, Dm, neweta);
     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
     deltapost = newlik - lik + deltagamma;
     if (log(R::runif(0.0, 1.0)) < deltapost) {
@@ -361,6 +362,7 @@ IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1
       for (k=0; k<nsub; k++) eta[k] = neweta[k];
       beta[j] = newbeta;
       gamma[j] = newgamma;
+      par = newpar;
       outgamma[2*iter+1] = j;
       outgamma[2*iter+2] = 1;
     } else {
@@ -435,7 +437,8 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
     newgamma = 1 - gamma[j];
     newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
     updateeta(eta, beta, j, newbeta, Xmat, neweta);
-    newlik = -loglik_pw(par, Dm, neweta, breaks);
+    newpar = fitsurv_pw(par, Dm, neweta, breaks);
+    newlik = -loglik_pw(newpar, Dm, neweta, breaks);
     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
     deltapost = newlik - lik + deltagamma;
     if (log(R::runif(0.0, 1.0)) < deltapost) {
@@ -445,6 +448,7 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
       gamma[j] = newgamma;
       outgamma[2*iter+1] = j;
       outgamma[2*iter+2] = 1;
+      par = newpar;
     } else {
       outgamma[2*iter+1] = j;
       outgamma[2*iter+2] = 0;        
@@ -802,7 +806,8 @@ IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1
     newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
     // updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
     updateeta(eta, beta, j, newbeta, Xmat, neweta);
-    newlik = -loglik_lamb(par, Dm, neweta);
+    newpar = fitsurv(par, Dm, neweta);
+    newlik = -loglik_lamb(newpar, Dm, neweta);
     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
     deltapost = newlik - lik + deltagamma;
     if (log(R::runif(0.0, 1.0)) < deltapost) {
@@ -810,6 +815,7 @@ IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1
       for (k=0; k<nsub; k++) eta[k] = neweta[k];
       beta[j] = newbeta;
       gamma[j] = newgamma;
+      par = newpar;
       outgamma[2*iter+1] = j;
       outgamma[2*iter+2] = 1;
     } else {
@@ -886,7 +892,8 @@ IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector bre
     newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
     // updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
     updateeta(eta, beta, j, newbeta, Xmat, neweta);
-    newlik = -loglik_pw(par, Dm, neweta, breaks);
+    newpar = fitsurv_pw(par, Dm, neweta, breaks);
+    newlik = -loglik_pw(newpar, Dm, neweta, breaks);
     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
     deltapost = newlik - lik + deltagamma;
     if (log(R::runif(0.0, 1.0)) < deltapost) {
@@ -894,6 +901,7 @@ IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector bre
       for (k=0; k<nsub; k++) eta[k] = neweta[k];
       beta[j] = newbeta;
       gamma[j] = newgamma;
+      par = newpar;
       outgamma[2*iter+1] = j;
       outgamma[2*iter+2] = 1;
     } else {
