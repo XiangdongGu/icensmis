@@ -1,5 +1,4 @@
 fitsurv <- function(parm, Dm, eta) {
-  x <- rnorm(1)
   q <- try(optim(parm, loglik_lamb, gradlik_lamb, method="BFGS", Dm=Dm, eta=eta), silent = TRUE)
   if (inherits(q, "try-error")) {
     q <- try(optim(rnorm(length(parm), 0, 0.2), loglik_lamb, gradlik_lamb, method="BFGS", Dm=Dm, eta=eta), silent = TRUE)
