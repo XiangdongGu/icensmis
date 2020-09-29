@@ -331,11 +331,13 @@ void updateeta(NumericVector eta, NumericVector beta, int j, double newbeta,
 // [[Rcpp::export]]
 IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1, double om2,
                       int niter, double psample, double initsurv, int nreport, Function fitsurv) {
-  RNGScope scope;
   int J = Dm.ncol() - 1, nsub = Xmat.nrow(), nbeta = Xmat.ncol(), i, j, newgamma, k, nselect;
-  double newbeta, newlik, deltagamma, deltapost, deltabeta;
+  double newbeta, newlik, deltagamma, deltapost, deltabeta, deltac, rv;
   // initialization
-  double omega = R::rbeta(om1, om2);
+  double omega;
+  GetRNGstate();
+  omega = R::rbeta(om1, om2);
+  PutRNGstate();
   IntegerVector gamma(nbeta, 0);
   NumericVector beta(nbeta, 0.0);
   NumericVector eta(nsub, 0.0);
@@ -349,15 +351,28 @@ IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1
   outgamma[0] = nbeta;
   for (int iter=0; iter < niter; iter++) {
     //update one gamma
+    GetRNGstate();
     j = nbeta*R::runif(0.0, 1.0);
+    PutRNGstate();
     newgamma = 1 - gamma[j];
-    newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
+    //newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
+    // above replaced by below
+    if (newgamma == 0) {
+      newbeta = 0.0;
+    } else {
+      GetRNGstate();
+      newbeta = R::rnorm(0.0, b);
+      PutRNGstate();
+    }
     updateeta(eta, beta, j, newbeta, Xmat, neweta);
     newpar = fitsurv(par, Dm, neweta);
     newlik = -loglik_lamb(newpar, Dm, neweta);
     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
     deltapost = newlik - lik + deltagamma;
-    if (log(R::runif(0.0, 1.0)) < deltapost) {
+    GetRNGstate();
+    deltac = R::runif(0.0, 1.0);
+    PutRNGstate();
+    if (log(deltac) < deltapost) {
       lik = newlik;
       for (k=0; k<nsub; k++) eta[k] = neweta[k];
       beta[j] = newbeta;
@@ -368,20 +383,28 @@ IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1
     } else {
       outgamma[2*iter+1] = j;
       outgamma[2*iter+2] = 0;        
-    }    
+    }
     // updage regression coefficients
     for (int p = 0; p < nbeta; p++) {
       if (gamma[p] == 1) {
-        if (R::runif(0.0, 1.0) < psample) {
+        GetRNGstate();
+        rv = R::runif(0.0, 1.0);
+        PutRNGstate();
+        if (rv < psample) {
           // propose a new beta
+          GetRNGstate();
           newbeta = R::rnorm(beta[p], b);
+          PutRNGstate();
           updateeta(eta, beta, p, newbeta, Xmat, neweta);
           // get the optimized par
           newpar = fitsurv(par, Dm, neweta);
           newlik = -loglik_lamb(newpar, Dm, neweta);
           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
           deltapost = newlik - lik + deltabeta;
-          if (log(R::runif(0.0, 1.0)) < deltapost) {
+          GetRNGstate();
+          deltac = R::runif(0.0, 1.0);
+          PutRNGstate();
+          if (log(deltac) < deltapost) {
             lik = newlik;
             for (k=0; k<nsub; k++) eta[k] = neweta[k];
             beta[p] = newbeta;
@@ -395,7 +418,9 @@ IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1
     //update omega
     nselect = 0;
     for (k=0; k<nbeta; k++) nselect += gamma[k]; 
+    GetRNGstate();
     omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
+    PutRNGstate();
     //report
     if (iter % nreport == 0) {
       //       std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
@@ -417,9 +442,12 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
   RNGScope scope;
   int J = Dm.ncol() - 1, JS=breaks.size(), nsub = Xmat.nrow(), nbeta = Xmat.ncol(), i, j, newgamma, k, nselect;
   if (J != breaks[JS-1] +1) stop("wrong input for breaks");
-  double newbeta, newlik, deltagamma, deltapost, deltabeta;
+  double newbeta, newlik, deltagamma, deltapost, deltabeta, deltac, rv;
   // initialization
-  double omega = R::rbeta(om1, om2);
+  double omega;
+  GetRNGstate();
+  omega = R::rbeta(om1, om2);
+  PutRNGstate();
   IntegerVector gamma(nbeta, 0);
   NumericVector beta(nbeta, 0.0);
   NumericVector eta(nsub, 0.0);
@@ -433,15 +461,28 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
   outgamma[0] = nbeta;
   for (int iter=0; iter < niter; iter++) {
     //update one gamma
+    GetRNGstate();
     j = nbeta*R::runif(0.0, 1.0);
+    PutRNGstate();
     newgamma = 1 - gamma[j];
-    newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
+    //newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
+    // above replaced by below
+    if (newgamma == 0) {
+      newbeta = 0.0;
+    } else {
+      GetRNGstate();
+      newbeta = R::rnorm(0.0, b);
+      PutRNGstate();
+    }
     updateeta(eta, beta, j, newbeta, Xmat, neweta);
     newpar = fitsurv_pw(par, Dm, neweta, breaks);
     newlik = -loglik_pw(newpar, Dm, neweta, breaks);
     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
     deltapost = newlik - lik + deltagamma;
-    if (log(R::runif(0.0, 1.0)) < deltapost) {
+    GetRNGstate();
+    deltac = R::runif(0.0, 1.0);
+    PutRNGstate();
+    if (log(deltac) < deltapost) {
       lik = newlik;
       for (k=0; k<nsub; k++) eta[k] = neweta[k];
       beta[j] = newbeta;
@@ -456,19 +497,28 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
     // updage regression coefficients
     for (int p = 0; p < nbeta; p++) {
       if (gamma[p] == 1) {
-        if (R::runif(0.0, 1.0) < psample) {
+        GetRNGstate();
+        rv = R::runif(0.0, 1.0);
+        PutRNGstate();
+        if (rv < psample) {
+          // propose a new beta
+          GetRNGstate();
           newbeta = R::rnorm(beta[p], b);
+          PutRNGstate();
           updateeta(eta, beta, p, newbeta, Xmat, neweta);
           // optimized par
           newpar = fitsurv_pw(par, Dm, neweta, breaks);
           newlik = -loglik_pw(newpar, Dm, neweta, breaks);
           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
           deltapost = newlik - lik + deltabeta;
-          if (log(R::runif(0.0, 1.0)) < deltapost) {
+          GetRNGstate();
+          deltac = R::runif(0.0, 1.0);
+          PutRNGstate();
+          if (log(deltac) < deltapost) {
             lik = newlik;
             for (k=0; k<nsub; k++) eta[k] = neweta[k];
             beta[p] = newbeta;
-            newpar = par;
+            par = newpar;
           }            
         }
       }
@@ -478,7 +528,9 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
     //update omega
     nselect = 0;
     for (k=0; k<nbeta; k++) nselect += gamma[k]; 
+    GetRNGstate();
     omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
+    PutRNGstate();
     //report
     if (iter % nreport == 0) {
       //       std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
@@ -779,176 +831,176 @@ void updateeta(NumericVector eta, NumericVector beta, int j, double newbeta,
     neweta[i] = eta[i] + Xmat(i, j)*(newbeta - beta[j]);
 }
 
-// [[Rcpp::export]]
-IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1, double om2,
-                          int niter, double psample, double initsurv, int nreport, Function fitsurv) {
-  RNGScope scope;
-  NumericVector sdv = Xmat_norm(Xmat);
-  int J = Dm.ncol() - 1, nsub = Xmat.nrow(), nbeta = Xmat.ncol(), i, j, newgamma, k, nselect;
-  double newbeta, newlik, deltagamma, deltapost, deltabeta;
-  // initialization
-  double omega = R::rbeta(om1, om2);
-  IntegerVector gamma(nbeta, 0);
-  NumericVector beta(nbeta, 0.0);
-  NumericVector eta(nsub, 0.0);
-  NumericVector neweta(nsub);
-  NumericVector par(J), newpar(J);
-  for (i=0; i<J; i++) par[i] = log(-log(initsurv)/J);
-  par = fitsurv(par, Dm, eta);
-  double lik = -loglik_lamb(par, Dm, eta);
-  //data to store gamma
-  IntegerVector outgamma(2*niter + 1);
-  outgamma[0] = nbeta;
-  for (int iter=0; iter < niter; iter++) {
-    //update one gamma
-    j = nbeta*R::runif(0.0, 1.0);
-    newgamma = 1 - gamma[j];
-    newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
-    // updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
-    updateeta(eta, beta, j, newbeta, Xmat, neweta);
-    newpar = fitsurv(par, Dm, neweta);
-    newlik = -loglik_lamb(newpar, Dm, neweta);
-    deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
-    deltapost = newlik - lik + deltagamma;
-    if (log(R::runif(0.0, 1.0)) < deltapost) {
-      lik = newlik;
-      for (k=0; k<nsub; k++) eta[k] = neweta[k];
-      beta[j] = newbeta;
-      gamma[j] = newgamma;
-      par = newpar;
-      outgamma[2*iter+1] = j;
-      outgamma[2*iter+2] = 1;
-    } else {
-      outgamma[2*iter+1] = j;
-      outgamma[2*iter+2] = 0;        
-    }    
-    // updage regression coefficients
-    for (int p = 0; p < nbeta; p++) {
-      if (gamma[p] == 1) {
-        if (R::runif(0.0, 1.0) < psample) {
-          newbeta = R::rnorm(beta[p], b);
-          // updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
-          updateeta(eta, beta, p, newbeta, Xmat, neweta);
-          // new optimized par
-          newpar = fitsurv(par, Dm, neweta);
-          newlik = -loglik_lamb(newpar, Dm, neweta);
-          deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
-          deltapost = newlik - lik + deltabeta;
-          if (log(R::runif(0.0, 1.0)) < deltapost) {
-            lik = newlik;
-            for (k=0; k<nsub; k++) eta[k] = neweta[k];
-            beta[p] = newbeta;
-            newpar = par;
-          }            
-        }
-      }
-    }
-    // update lambda
-    //par = fitsurv(par, Dm, eta);
-    //update omega
-    nselect = 0;
-    for (k=0; k<nbeta; k++) nselect += gamma[k]; 
-    omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
-    //report
-    if (iter % nreport == 0) {
-      //        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
-      //        std::cout << "Survival parameters:";
-      //        for (k=0;k < J; k++) std::cout << par[k] << ",  ";
-      //        std::cout << "\n";       
-      Rprintf("At iteration %d, model size is: %d. \n", iter, nselect);
-      Rprintf("Survival parameters:");
-      for (k=0;k < J; k++) Rprintf("   %f8", par[k]);
-      Rprintf("\n\n");
-    }
-  }
-  return outgamma;    
-}    
-
-// [[Rcpp::export]]
-IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector breaks, double b, double om1, double om2,
-                             int niter, double psample, double initsurv, int nreport, Function fitsurv_pw) {
-  RNGScope scope;
-  NumericVector sdv = Xmat_norm(Xmat);
-  int J = Dm.ncol() - 1, JS=breaks.size(), nsub = Xmat.nrow(), nbeta = Xmat.ncol(), i, j, newgamma, k, nselect;
-  if (J != breaks[JS-1] +1) stop("wrong input for breaks");
-  double newbeta, newlik, deltagamma, deltapost, deltabeta;
-  // initialization
-  double omega = R::rbeta(om1, om2);
-  IntegerVector gamma(nbeta, 0);
-  NumericVector beta(nbeta, 0.0);
-  NumericVector eta(nsub, 0.0);
-  NumericVector neweta(nsub);
-  NumericVector par(JS), newpar(JS);
-  for (i=0; i<JS; i++) par[i] = log(-log(initsurv)/J);
-  par = fitsurv_pw(par, Dm, eta, breaks);
-  double lik = -loglik_pw(par, Dm, eta, breaks);
-  //data to store gamma
-  IntegerVector outgamma(2*niter + 1);
-  outgamma[0] = nbeta;
-  for (int iter=0; iter < niter; iter++) {
-    //update one gamma
-    j = nbeta*R::runif(0.0, 1.0);
-    newgamma = 1 - gamma[j];
-    newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
-    // updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
-    updateeta(eta, beta, j, newbeta, Xmat, neweta);
-    newpar = fitsurv_pw(par, Dm, neweta, breaks);
-    newlik = -loglik_pw(newpar, Dm, neweta, breaks);
-    deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
-    deltapost = newlik - lik + deltagamma;
-    if (log(R::runif(0.0, 1.0)) < deltapost) {
-      lik = newlik;
-      for (k=0; k<nsub; k++) eta[k] = neweta[k];
-      beta[j] = newbeta;
-      gamma[j] = newgamma;
-      par = newpar;
-      outgamma[2*iter+1] = j;
-      outgamma[2*iter+2] = 1;
-    } else {
-      outgamma[2*iter+1] = j;
-      outgamma[2*iter+2] = 0;        
-    }    
-    // updage regression coefficients
-    for (int p = 0; p < nbeta; p++) {
-      if (gamma[p] == 1) {
-        if (R::runif(0.0, 1.0) < psample) {
-          newbeta = R::rnorm(beta[p], b);
-          // updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
-          updateeta(eta, beta, p, newbeta, Xmat, neweta);
-          // get the optimized par
-          newpar = fitsurv_pw(par, Dm, neweta, breaks);
-          newlik = -loglik_pw(newpar, Dm, neweta, breaks);
-          deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
-          deltapost = newlik - lik + deltabeta;
-          if (log(R::runif(0.0, 1.0)) < deltapost) {
-            lik = newlik;
-            for (k=0; k<nsub; k++) eta[k] = neweta[k];
-            beta[p] = newbeta;
-            par = newpar;
-          }            
-        }
-      }
-    }
-    // update lambda
-    //par = fitsurv_pw(par, Dm, eta, breaks);
-    //update omega
-    nselect = 0;
-    for (k=0; k<nbeta; k++) nselect += gamma[k]; 
-    omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
-    //report
-    if (iter % nreport == 0) {
-      //        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
-      //        std::cout << "Survival parameters:";
-      //        for (k=0;k < JS; k++) std::cout << par[k] << ",  ";
-      //        std::cout << "\n";
-      Rprintf("At iteration %d, model size is: %d. \n", iter, nselect);
-      Rprintf("Survival parameters:");
-      for (k=0;k < JS; k++) Rprintf("   %f8", par[k]);
-      Rprintf("\n\n");
-    }
-  }
-  return outgamma;    
-}    
+// // [[Rcpp::export]]
+// IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1, double om2,
+//                           int niter, double psample, double initsurv, int nreport, Function fitsurv) {
+//   RNGScope scope;
+//   NumericVector sdv = Xmat_norm(Xmat);
+//   int J = Dm.ncol() - 1, nsub = Xmat.nrow(), nbeta = Xmat.ncol(), i, j, newgamma, k, nselect;
+//   double newbeta, newlik, deltagamma, deltapost, deltabeta;
+//   // initialization
+//   double omega = R::rbeta(om1, om2);
+//   IntegerVector gamma(nbeta, 0);
+//   NumericVector beta(nbeta, 0.0);
+//   NumericVector eta(nsub, 0.0);
+//   NumericVector neweta(nsub);
+//   NumericVector par(J), newpar(J);
+//   for (i=0; i<J; i++) par[i] = log(-log(initsurv)/J);
+//   par = fitsurv(par, Dm, eta);
+//   double lik = -loglik_lamb(par, Dm, eta);
+//   //data to store gamma
+//   IntegerVector outgamma(2*niter + 1);
+//   outgamma[0] = nbeta;
+//   for (int iter=0; iter < niter; iter++) {
+//     //update one gamma
+//     j = nbeta*R::runif(0.0, 1.0);
+//     newgamma = 1 - gamma[j];
+//     newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
+//     // updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
+//     updateeta(eta, beta, j, newbeta, Xmat, neweta);
+//     newpar = fitsurv(par, Dm, neweta);
+//     newlik = -loglik_lamb(newpar, Dm, neweta);
+//     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
+//     deltapost = newlik - lik + deltagamma;
+//     if (log(R::runif(0.0, 1.0)) < deltapost) {
+//       lik = newlik;
+//       for (k=0; k<nsub; k++) eta[k] = neweta[k];
+//       beta[j] = newbeta;
+//       gamma[j] = newgamma;
+//       par = newpar;
+//       outgamma[2*iter+1] = j;
+//       outgamma[2*iter+2] = 1;
+//     } else {
+//       outgamma[2*iter+1] = j;
+//       outgamma[2*iter+2] = 0;        
+//     }    
+//     // updage regression coefficients
+//     for (int p = 0; p < nbeta; p++) {
+//       if (gamma[p] == 1) {
+//         if (R::runif(0.0, 1.0) < psample) {
+//           newbeta = R::rnorm(beta[p], b);
+//           // updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
+//           updateeta(eta, beta, p, newbeta, Xmat, neweta);
+//           // new optimized par
+//           newpar = fitsurv(par, Dm, neweta);
+//           newlik = -loglik_lamb(newpar, Dm, neweta);
+//           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
+//           deltapost = newlik - lik + deltabeta;
+//           if (log(R::runif(0.0, 1.0)) < deltapost) {
+//             lik = newlik;
+//             for (k=0; k<nsub; k++) eta[k] = neweta[k];
+//             beta[p] = newbeta;
+//             newpar = par;
+//           }            
+//         }
+//       }
+//     }
+//     // update lambda
+//     //par = fitsurv(par, Dm, eta);
+//     //update omega
+//     nselect = 0;
+//     for (k=0; k<nbeta; k++) nselect += gamma[k]; 
+//     omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
+//     //report
+//     if (iter % nreport == 0) {
+//       //        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
+//       //        std::cout << "Survival parameters:";
+//       //        for (k=0;k < J; k++) std::cout << par[k] << ",  ";
+//       //        std::cout << "\n";       
+//       Rprintf("At iteration %d, model size is: %d. \n", iter, nselect);
+//       Rprintf("Survival parameters:");
+//       for (k=0;k < J; k++) Rprintf("   %f8", par[k]);
+//       Rprintf("\n\n");
+//     }
+//   }
+//   return outgamma;    
+// }    
+// 
+// // [[Rcpp::export]]
+// IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector breaks, double b, double om1, double om2,
+//                              int niter, double psample, double initsurv, int nreport, Function fitsurv_pw) {
+//   RNGScope scope;
+//   NumericVector sdv = Xmat_norm(Xmat);
+//   int J = Dm.ncol() - 1, JS=breaks.size(), nsub = Xmat.nrow(), nbeta = Xmat.ncol(), i, j, newgamma, k, nselect;
+//   if (J != breaks[JS-1] +1) stop("wrong input for breaks");
+//   double newbeta, newlik, deltagamma, deltapost, deltabeta;
+//   // initialization
+//   double omega = R::rbeta(om1, om2);
+//   IntegerVector gamma(nbeta, 0);
+//   NumericVector beta(nbeta, 0.0);
+//   NumericVector eta(nsub, 0.0);
+//   NumericVector neweta(nsub);
+//   NumericVector par(JS), newpar(JS);
+//   for (i=0; i<JS; i++) par[i] = log(-log(initsurv)/J);
+//   par = fitsurv_pw(par, Dm, eta, breaks);
+//   double lik = -loglik_pw(par, Dm, eta, breaks);
+//   //data to store gamma
+//   IntegerVector outgamma(2*niter + 1);
+//   outgamma[0] = nbeta;
+//   for (int iter=0; iter < niter; iter++) {
+//     //update one gamma
+//     j = nbeta*R::runif(0.0, 1.0);
+//     newgamma = 1 - gamma[j];
+//     newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
+//     // updateeta(eta, beta, j, newbeta, Xmat, sdv, neweta);
+//     updateeta(eta, beta, j, newbeta, Xmat, neweta);
+//     newpar = fitsurv_pw(par, Dm, neweta, breaks);
+//     newlik = -loglik_pw(newpar, Dm, neweta, breaks);
+//     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
+//     deltapost = newlik - lik + deltagamma;
+//     if (log(R::runif(0.0, 1.0)) < deltapost) {
+//       lik = newlik;
+//       for (k=0; k<nsub; k++) eta[k] = neweta[k];
+//       beta[j] = newbeta;
+//       gamma[j] = newgamma;
+//       par = newpar;
+//       outgamma[2*iter+1] = j;
+//       outgamma[2*iter+2] = 1;
+//     } else {
+//       outgamma[2*iter+1] = j;
+//       outgamma[2*iter+2] = 0;        
+//     }    
+//     // updage regression coefficients
+//     for (int p = 0; p < nbeta; p++) {
+//       if (gamma[p] == 1) {
+//         if (R::runif(0.0, 1.0) < psample) {
+//           newbeta = R::rnorm(beta[p], b);
+//           // updateeta(eta, beta, p, newbeta, Xmat, sdv, neweta);
+//           updateeta(eta, beta, p, newbeta, Xmat, neweta);
+//           // get the optimized par
+//           newpar = fitsurv_pw(par, Dm, neweta, breaks);
+//           newlik = -loglik_pw(newpar, Dm, neweta, breaks);
+//           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
+//           deltapost = newlik - lik + deltabeta;
+//           if (log(R::runif(0.0, 1.0)) < deltapost) {
+//             lik = newlik;
+//             for (k=0; k<nsub; k++) eta[k] = neweta[k];
+//             beta[p] = newbeta;
+//             par = newpar;
+//           }            
+//         }
+//       }
+//     }
+//     // update lambda
+//     //par = fitsurv_pw(par, Dm, eta, breaks);
+//     //update omega
+//     nselect = 0;
+//     for (k=0; k<nbeta; k++) nselect += gamma[k]; 
+//     omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
+//     //report
+//     if (iter % nreport == 0) {
+//       //        std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
+//       //        std::cout << "Survival parameters:";
+//       //        for (k=0;k < JS; k++) std::cout << par[k] << ",  ";
+//       //        std::cout << "\n";
+//       Rprintf("At iteration %d, model size is: %d. \n", iter, nselect);
+//       Rprintf("Survival parameters:");
+//       for (k=0;k < JS; k++) Rprintf("   %f8", par[k]);
+//       Rprintf("\n\n");
+//     }
+//   }
+//   return outgamma;    
+// }    
 
 // [[Rcpp::export]]
 void matrixStandardize(NumericMatrix X) {
