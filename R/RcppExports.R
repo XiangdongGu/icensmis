@@ -33,6 +33,19 @@ iclasso_pw <- function(Dm, Xmat, parmi, breaks, lambda, fitsurv_pw, tol) {
     .Call('_icensmis_iclasso_pw', PACKAGE = 'icensmis', Dm, Xmat, parmi, breaks, lambda, fitsurv_pw, tol)
 }
 
+#' Bayesian method for high-dimensional variable selection
+#' 
+#' @param Dm the D matrix
+#' @param Xmat the design matrix
+#' @param b the prior distribution parameter for beta, normal std
+#' @param om1 the prior distribution parameter for omega
+#' @param om2 the piror distribution parameter for omega
+#' @param niter number of iteration
+#' @param psample the sampling probability for updading regresson coefficient
+#' @param initsurv initial survival probabilities at end of study
+#' @param nreport every how many iterations to output parameters
+#' @param fitsurv the survival parameters optimization function
+#' @export
 bayesmc <- function(Dm, Xmat, b, om1, om2, niter, psample, initsurv, nreport, fitsurv) {
     .Call('_icensmis_bayesmc', PACKAGE = 'icensmis', Dm, Xmat, b, om1, om2, niter, psample, initsurv, nreport, fitsurv)
 }

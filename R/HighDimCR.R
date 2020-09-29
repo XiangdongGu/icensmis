@@ -3,6 +3,7 @@
 #' @param parm the initial parameter value
 #' @param Dm the D matrix
 #' @param eta equals to X*bea
+#' @export
 #' 
 fitsurv <- function(parm, Dm, eta) {
   q <- try(optim(parm, loglik_lamb, gradlik_lamb, method="BFGS", Dm=Dm, eta=eta), silent = TRUE)
