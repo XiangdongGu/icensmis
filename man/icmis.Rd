@@ -5,9 +5,21 @@
 \title{Maximum likelihood estimation for settings of error-prone diagnostic tests 
 and self-reported outcomes}
 \usage{
-icmis(subject, testtime, result, data, sensitivity, specificity,
-  formula = NULL, negpred = 1, time.varying = F, betai = NULL,
-  initsurv = 0.5, param = 1, ...)
+icmis(
+  subject,
+  testtime,
+  result,
+  data,
+  sensitivity,
+  specificity,
+  formula = NULL,
+  negpred = 1,
+  time.varying = F,
+  betai = NULL,
+  initsurv = 0.5,
+  param = 1,
+  ...
+)
 }
 \arguments{
 \item{subject}{variable in data for subject id.}

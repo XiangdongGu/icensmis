@@ -5,9 +5,22 @@
 \title{Study design in the presence of error-prone diagnostic tests and 
 self-reported outcomes for Weibull model}
 \usage{
-icpower_weibull(HR, sensitivity, specificity, shape, scale, times, N = NULL,
-  power = NULL, rho = 0.5, alpha = 0.05, pmiss = 0, pcensor = 0,
-  design = "MCAR", negpred = 1)
+icpower_weibull(
+  HR,
+  sensitivity,
+  specificity,
+  shape,
+  scale,
+  times,
+  N = NULL,
+  power = NULL,
+  rho = 0.5,
+  alpha = 0.05,
+  pmiss = 0,
+  pcensor = 0,
+  design = "MCAR",
+  negpred = 1
+)
 }
 \arguments{
 \item{HR}{hazard ratio under the alternative hypothesis.}

@@ -5,49 +5,6 @@
 
 using namespace Rcpp;
 
-// dmat
-NumericMatrix dmat(NumericVector id, NumericVector time, IntegerVector result, double phi1, double phi0, double negpred);
-RcppExport SEXP _icensmis_dmat(SEXP idSEXP, SEXP timeSEXP, SEXP resultSEXP, SEXP phi1SEXP, SEXP phi0SEXP, SEXP negpredSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type id(idSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type time(timeSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type result(resultSEXP);
-    Rcpp::traits::input_parameter< double >::type phi1(phi1SEXP);
-    Rcpp::traits::input_parameter< double >::type phi0(phi0SEXP);
-    Rcpp::traits::input_parameter< double >::type negpred(negpredSEXP);
-    rcpp_result_gen = Rcpp::wrap(dmat(id, time, result, phi1, phi0, negpred));
-    return rcpp_result_gen;
-END_RCPP
-}
-// getrids
-IntegerVector getrids(NumericVector id, int nsub);
-RcppExport SEXP _icensmis_getrids(SEXP idSEXP, SEXP nsubSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type id(idSEXP);
-    Rcpp::traits::input_parameter< int >::type nsub(nsubSEXP);
-    rcpp_result_gen = Rcpp::wrap(getrids(id, nsub));
-    return rcpp_result_gen;
-END_RCPP
-}
-// timeMat
-NumericMatrix timeMat(int nsub, int J, NumericVector time, NumericVector utime, NumericMatrix Xmat);
-RcppExport SEXP _icensmis_timeMat(SEXP nsubSEXP, SEXP JSEXP, SEXP timeSEXP, SEXP utimeSEXP, SEXP XmatSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nsub(nsubSEXP);
-    Rcpp::traits::input_parameter< int >::type J(JSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type time(timeSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type utime(utimeSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Xmat(XmatSEXP);
-    rcpp_result_gen = Rcpp::wrap(timeMat(nsub, J, time, utime, Xmat));
-    return rcpp_result_gen;
-END_RCPP
-}
 // loglik_lamb
 double loglik_lamb(NumericVector par, NumericMatrix Dm, NumericVector eta);
 RcppExport SEXP _icensmis_loglik_lamb(SEXP parSEXP, SEXP DmSEXP, SEXP etaSEXP) {
@@ -343,47 +300,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// bayesmc_raw
-IntegerVector bayesmc_raw(NumericMatrix Dm, RawMatrix Xmat, double b, double om1, double om2, int niter, double psample, double initsurv, int nreport, Function fitsurv);
-RcppExport SEXP _icensmis_bayesmc_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurvSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type Dm(DmSEXP);
-    Rcpp::traits::input_parameter< RawMatrix >::type Xmat(XmatSEXP);
-    Rcpp::traits::input_parameter< double >::type b(bSEXP);
-    Rcpp::traits::input_parameter< double >::type om1(om1SEXP);
-    Rcpp::traits::input_parameter< double >::type om2(om2SEXP);
-    Rcpp::traits::input_parameter< int >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< double >::type psample(psampleSEXP);
-    Rcpp::traits::input_parameter< double >::type initsurv(initsurvSEXP);
-    Rcpp::traits::input_parameter< int >::type nreport(nreportSEXP);
-    Rcpp::traits::input_parameter< Function >::type fitsurv(fitsurvSEXP);
-    rcpp_result_gen = Rcpp::wrap(bayesmc_raw(Dm, Xmat, b, om1, om2, niter, psample, initsurv, nreport, fitsurv));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bayesmc_pw_raw
-IntegerVector bayesmc_pw_raw(NumericMatrix Dm, RawMatrix Xmat, IntegerVector breaks, double b, double om1, double om2, int niter, double psample, double initsurv, int nreport, Function fitsurv_pw);
-RcppExport SEXP _icensmis_bayesmc_pw_raw(SEXP DmSEXP, SEXP XmatSEXP, SEXP breaksSEXP, SEXP bSEXP, SEXP om1SEXP, SEXP om2SEXP, SEXP niterSEXP, SEXP psampleSEXP, SEXP initsurvSEXP, SEXP nreportSEXP, SEXP fitsurv_pwSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type Dm(DmSEXP);
-    Rcpp::traits::input_parameter< RawMatrix >::type Xmat(XmatSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type breaks(breaksSEXP);
-    Rcpp::traits::input_parameter< double >::type b(bSEXP);
-    Rcpp::traits::input_parameter< double >::type om1(om1SEXP);
-    Rcpp::traits::input_parameter< double >::type om2(om2SEXP);
-    Rcpp::traits::input_parameter< int >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< double >::type psample(psampleSEXP);
-    Rcpp::traits::input_parameter< double >::type initsurv(initsurvSEXP);
-    Rcpp::traits::input_parameter< int >::type nreport(nreportSEXP);
-    Rcpp::traits::input_parameter< Function >::type fitsurv_pw(fitsurv_pwSEXP);
-    rcpp_result_gen = Rcpp::wrap(bayesmc_pw_raw(Dm, Xmat, breaks, b, om1, om2, niter, psample, initsurv, nreport, fitsurv_pw));
-    return rcpp_result_gen;
-END_RCPP
-}
 // matrixStandardize
 void matrixStandardize(NumericMatrix X);
 RcppExport SEXP _icensmis_matrixStandardize(SEXP XSEXP) {
@@ -392,6 +308,49 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
     matrixStandardize(X);
     return R_NilValue;
+END_RCPP
+}
+// dmat
+NumericMatrix dmat(NumericVector id, NumericVector time, IntegerVector result, double phi1, double phi0, double negpred);
+RcppExport SEXP _icensmis_dmat(SEXP idSEXP, SEXP timeSEXP, SEXP resultSEXP, SEXP phi1SEXP, SEXP phi0SEXP, SEXP negpredSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type id(idSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type result(resultSEXP);
+    Rcpp::traits::input_parameter< double >::type phi1(phi1SEXP);
+    Rcpp::traits::input_parameter< double >::type phi0(phi0SEXP);
+    Rcpp::traits::input_parameter< double >::type negpred(negpredSEXP);
+    rcpp_result_gen = Rcpp::wrap(dmat(id, time, result, phi1, phi0, negpred));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getrids
+IntegerVector getrids(NumericVector id, int nsub);
+RcppExport SEXP _icensmis_getrids(SEXP idSEXP, SEXP nsubSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type id(idSEXP);
+    Rcpp::traits::input_parameter< int >::type nsub(nsubSEXP);
+    rcpp_result_gen = Rcpp::wrap(getrids(id, nsub));
+    return rcpp_result_gen;
+END_RCPP
+}
+// timeMat
+NumericMatrix timeMat(int nsub, int J, NumericVector time, NumericVector utime, NumericMatrix Xmat);
+RcppExport SEXP _icensmis_timeMat(SEXP nsubSEXP, SEXP JSEXP, SEXP timeSEXP, SEXP utimeSEXP, SEXP XmatSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nsub(nsubSEXP);
+    Rcpp::traits::input_parameter< int >::type J(JSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type utime(utimeSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Xmat(XmatSEXP);
+    rcpp_result_gen = Rcpp::wrap(timeMat(nsub, J, time, utime, Xmat));
+    return rcpp_result_gen;
 END_RCPP
 }
 // loglikA0
@@ -658,9 +617,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_icensmis_dmat", (DL_FUNC) &_icensmis_dmat, 6},
-    {"_icensmis_getrids", (DL_FUNC) &_icensmis_getrids, 2},
-    {"_icensmis_timeMat", (DL_FUNC) &_icensmis_timeMat, 5},
     {"_icensmis_loglik_lamb", (DL_FUNC) &_icensmis_loglik_lamb, 3},
     {"_icensmis_gradlik_lamb", (DL_FUNC) &_icensmis_gradlik_lamb, 3},
     {"_icensmis_loglik_pw", (DL_FUNC) &_icensmis_loglik_pw, 4},
@@ -681,9 +637,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_icensmis_iclasso_raw", (DL_FUNC) &_icensmis_iclasso_raw, 7},
     {"_icensmis_maxlambda_pw_raw", (DL_FUNC) &_icensmis_maxlambda_pw_raw, 6},
     {"_icensmis_iclasso_pw_raw", (DL_FUNC) &_icensmis_iclasso_pw_raw, 8},
-    {"_icensmis_bayesmc_raw", (DL_FUNC) &_icensmis_bayesmc_raw, 10},
-    {"_icensmis_bayesmc_pw_raw", (DL_FUNC) &_icensmis_bayesmc_pw_raw, 11},
     {"_icensmis_matrixStandardize", (DL_FUNC) &_icensmis_matrixStandardize, 1},
+    {"_icensmis_dmat", (DL_FUNC) &_icensmis_dmat, 6},
+    {"_icensmis_getrids", (DL_FUNC) &_icensmis_getrids, 2},
+    {"_icensmis_timeMat", (DL_FUNC) &_icensmis_timeMat, 5},
     {"_icensmis_loglikA0", (DL_FUNC) &_icensmis_loglikA0, 2},
     {"_icensmis_gradlikA0", (DL_FUNC) &_icensmis_gradlikA0, 2},
     {"_icensmis_loglikA", (DL_FUNC) &_icensmis_loglikA, 3},
