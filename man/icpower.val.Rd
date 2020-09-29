@@ -6,9 +6,21 @@
 self-reported outcomes when sensitivity and specificity are unkonwn and a 
 validation set is used}
 \usage{
-icpower.val(HR, sensitivity, specificity, survivals, N = NULL, power = NULL,
-  rhoval, rho = 0.5, alpha = 0.05, pmiss = 0, design = "MCAR",
-  designval = "MCAR", negpred = 1)
+icpower.val(
+  HR,
+  sensitivity,
+  specificity,
+  survivals,
+  N = NULL,
+  power = NULL,
+  rhoval,
+  rho = 0.5,
+  alpha = 0.05,
+  pmiss = 0,
+  design = "MCAR",
+  designval = "MCAR",
+  negpred = 1
+)
 }
 \arguments{
 \item{HR}{hazard ratio under the alternative hypothesis.}

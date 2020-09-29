@@ -5,9 +5,20 @@
 \title{Simulate data including multiple outcomes from error-prone diagnostic tests 
 or self-reports}
 \usage{
-datasim(N, blambda, testtimes, sensitivity, specificity, betas = NULL,
-  twogroup = NULL, pmiss = 0, pcensor = 0, design = "MCAR",
-  negpred = 1, time.varying = F)
+datasim(
+  N,
+  blambda,
+  testtimes,
+  sensitivity,
+  specificity,
+  betas = NULL,
+  twogroup = NULL,
+  pmiss = 0,
+  pcensor = 0,
+  design = "MCAR",
+  negpred = 1,
+  time.varying = F
+)
 }
 \arguments{
 \item{N}{total number of subjects to be simulated}

@@ -5,8 +5,15 @@
 \title{Study design in the presence of interval censored outcomes (assuming perfect
 diagnostic tests)}
 \usage{
-icpowerpf(HR, survivals, N = NULL, power = NULL, rho = 0.5,
-  alpha = 0.05, pmiss = 0)
+icpowerpf(
+  HR,
+  survivals,
+  N = NULL,
+  power = NULL,
+  rho = 0.5,
+  alpha = 0.05,
+  pmiss = 0
+)
 }
 \arguments{
 \item{HR}{hazard ratio under the alternative hypothesis.}
