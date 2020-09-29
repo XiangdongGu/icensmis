@@ -328,6 +328,19 @@ void updateeta(NumericVector eta, NumericVector beta, int j, double newbeta,
     neweta[i] = eta[i] + Xmat(i, j)*(newbeta - beta[j]);
 }
 
+//' Bayesian method for high-dimensional variable selection
+//' 
+//' @param Dm the D matrix
+//' @param Xmat the design matrix
+//' @param b the prior distribution parameter for beta, normal std
+//' @param om1 the prior distribution parameter for omega
+//' @param om2 the piror distribution parameter for omega
+//' @param niter number of iteration
+//' @param psample the sampling probability for updading regresson coefficient
+//' @param initsurv initial survival probabilities at end of study
+//' @param nreport every how many iterations to output parameters
+//' @param fitsurv the survival parameters optimization function
+//' @export
 // [[Rcpp::export]]
 IntegerVector bayesmc(NumericMatrix Dm, NumericMatrix Xmat, double b, double om1, double om2,
                       int niter, double psample, double initsurv, int nreport, Function fitsurv) {
