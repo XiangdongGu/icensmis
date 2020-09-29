@@ -1,8 +1,8 @@
 Package: icensmis
 Type: Package
 Title: Study Design and Data Analysis in the Presence of Error-Prone Diagnostic Tests and Self-Reported Outcomes
-Version: 1.3.0
-Date: 2015-10-10
+Version: 1.4.0
+Date: 2020-09-29
 Author: Xiangdong Gu and Raji Balasubramanian
 Maintainer: Xiangdong Gu <ustcgxd@gmail.com>
 Description: We consider studies in which information from error-prone
