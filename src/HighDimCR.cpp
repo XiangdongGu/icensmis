@@ -442,9 +442,12 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
   RNGScope scope;
   int J = Dm.ncol() - 1, JS=breaks.size(), nsub = Xmat.nrow(), nbeta = Xmat.ncol(), i, j, newgamma, k, nselect;
   if (J != breaks[JS-1] +1) stop("wrong input for breaks");
-  double newbeta, newlik, deltagamma, deltapost, deltabeta;
+  double newbeta, newlik, deltagamma, deltapost, deltabeta, deltac, rv;
   // initialization
-  double omega = R::rbeta(om1, om2);
+  double omega;
+  GetRNGstate();
+  omega = R::rbeta(om1, om2);
+  PutRNGstate();
   IntegerVector gamma(nbeta, 0);
   NumericVector beta(nbeta, 0.0);
   NumericVector eta(nsub, 0.0);
@@ -458,15 +461,28 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
   outgamma[0] = nbeta;
   for (int iter=0; iter < niter; iter++) {
     //update one gamma
+    GetRNGstate();
     j = nbeta*R::runif(0.0, 1.0);
+    PutRNGstate();
     newgamma = 1 - gamma[j];
-    newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
+    //newbeta = newgamma == 0 ? 0.0 :  R::rnorm(0.0, b);
+    // above replaced by below
+    if (newgamma == 0) {
+      newbeta = 0.0;
+    } else {
+      GetRNGstate();
+      newbeta = R::rnorm(0.0, b);
+      PutRNGstate();
+    }
     updateeta(eta, beta, j, newbeta, Xmat, neweta);
     newpar = fitsurv_pw(par, Dm, neweta, breaks);
     newlik = -loglik_pw(newpar, Dm, neweta, breaks);
     deltagamma = newgamma == 1 ? log(omega/(1-omega)) : log((1-omega)/omega);
     deltapost = newlik - lik + deltagamma;
-    if (log(R::runif(0.0, 1.0)) < deltapost) {
+    GetRNGstate();
+    deltac = R::runif(0.0, 1.0);
+    PutRNGstate();
+    if (log(deltac) < deltapost) {
       lik = newlik;
       for (k=0; k<nsub; k++) eta[k] = neweta[k];
       beta[j] = newbeta;
@@ -481,19 +497,28 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
     // updage regression coefficients
     for (int p = 0; p < nbeta; p++) {
       if (gamma[p] == 1) {
-        if (R::runif(0.0, 1.0) < psample) {
+        GetRNGstate();
+        rv = R::runif(0.0, 1.0);
+        PutRNGstate();
+        if (rv < psample) {
+          // propose a new beta
+          GetRNGstate();
           newbeta = R::rnorm(beta[p], b);
+          PutRNGstate();
           updateeta(eta, beta, p, newbeta, Xmat, neweta);
           // optimized par
           newpar = fitsurv_pw(par, Dm, neweta, breaks);
           newlik = -loglik_pw(newpar, Dm, neweta, breaks);
           deltabeta = R::dnorm(newbeta, 0.0, b, 1) - R::dnorm(beta[p], 0.0, b, 1);
           deltapost = newlik - lik + deltabeta;
-          if (log(R::runif(0.0, 1.0)) < deltapost) {
+          GetRNGstate();
+          deltac = R::runif(0.0, 1.0);
+          PutRNGstate();
+          if (log(deltac) < deltapost) {
             lik = newlik;
             for (k=0; k<nsub; k++) eta[k] = neweta[k];
             beta[p] = newbeta;
-            newpar = par;
+            par = newpar;
           }            
         }
       }
@@ -503,7 +528,9 @@ IntegerVector bayesmc_pw(NumericMatrix Dm, NumericMatrix Xmat, IntegerVector bre
     //update omega
     nselect = 0;
     for (k=0; k<nbeta; k++) nselect += gamma[k]; 
+    GetRNGstate();
     omega = R::rbeta(om1 + nselect, om2 + nbeta - nselect);
+    PutRNGstate();
     //report
     if (iter % nreport == 0) {
       //       std::cout << "At iteration " << iter <<".  Model size: " << nselect <<"\n";
