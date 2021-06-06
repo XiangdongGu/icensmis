@@ -156,6 +156,15 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
   if (param == 3 && time.varying) 
     stop("parameterization 3 is not available for time varying model")
   
+  # Issue-1: Check for baseline prevalent subject
+  if (any(time == 0 & result == 1)) {
+    pre_ids <- id[time == 0 & result == 1]
+    stop(sprintf(
+      "Existing baseline prevalent subjects: %s; need to remove them",
+      paste(pre_ids, collapse = ","))
+    )
+  }
+  
   #############################################################################
   # Compute D matrix
   #############################################################################  
