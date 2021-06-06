@@ -148,6 +148,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
             length(negpred) == 1, negpred >= 0, negpred <= 1)
   stopifnot(length(initsurv) == 1, initsurv > 0, initsurv < 1)
   if (!all(result %in% c(0, 1))) stop("result must be 0 or 1")
+  if (any(is.na(time))) stop("Missing value found in testtime")
   if (any(tapply(time, id, anyDuplicated)))
     stop("existing duplicated visit times for some subjects")  
   if (!all(utime >= 0 & utime < Inf))
