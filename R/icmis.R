@@ -120,8 +120,8 @@
 #'  formula = ~cov1+cov2+cov3, negpred = 1, time.varying = TRUE)
 
 icmis <- function(subject, testtime, result, data, sensitivity, specificity,
-                   formula = NULL, negpred = 1, time.varying = F, 
-                   betai = NULL, initsurv = 0.5, param = 1, ...){
+                  formula = NULL, negpred = 1, time.varying = F, 
+                  betai = NULL, initsurv = 0.5, param = 1, ...){
   
   #############################################################################
   # Data Pre-processing: sort by id then by time
@@ -164,6 +164,14 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
       "Existing baseline prevalent subjects: %s; need to remove them",
       paste(pre_ids, collapse = ","))
     )
+  }
+  
+  # Issue-1: Check number of unique test times
+  if (length(utime) > sqrt(length(time))) {
+    warning(paste0(
+      "There are too many distinct testtime values, consider",
+      " rounding testtime, e.g. to year or month"
+    ))
   }
   
   #############################################################################
@@ -216,7 +224,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
     list(loglik = loglik, coefficient = coef, survival = survival, beta.cov = cov,
          nsub = nsub)
   }
-
+  
   #############################################################################
   # No-covariate model (one sample case)
   #############################################################################
