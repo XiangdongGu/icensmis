@@ -47,7 +47,7 @@
 #'   likelihood function)
 #' @param ... other arguments passed to \code{\link{optim}} function. For 
 #'   example, if the optimization does not converge, we can increase maxit in 
-#'   the optim function.
+#'   the optim function's control argument.
 #'   
 #' @details The input data should be in longitudinal form with one row per test 
 #'   time. Use \code{\link{datasim}} to simulate a dataset to see the sample 
@@ -174,6 +174,14 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
     ))
   }
   
+  # Error message for convergence
+  conv_msg <- paste0(
+    "Model not converged, code: %s, refer to optim function for details. ",
+    "Try to increase maxit in function argument, ", 
+    "e.g. using control = list(maxit = 500), and/or",
+    " use different parameterization by changing param argument."
+  )
+  
   #############################################################################
   # Compute D matrix
   #############################################################################  
@@ -238,8 +246,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
       q <- optim(lami, loglikC0, gradlikC0, lower = lowlam, Dm = Dm, 
                  method = "L-BFGS-B", ...)
     }
-    if (q$convergence != 0) 
-      stop(paste("Not converged, code:", q$convergence)) 
+    if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
     return(output(q))
   }
   
@@ -269,8 +276,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
       q <- optim(parmi, loglikC, gradlikC, lower = c(lowlam, rep(-Inf, nbeta)),
                  Dm = Dm, Xmat = Xmat, method = "L-BFGS-B", hessian = T, ...)
     }    
-    if (q$convergence != 0) 
-      stop(paste("Not converged, code:", q$convergence)) 
+    if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
     return(output(q))
   }
   
@@ -289,7 +295,6 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
     q <- optim(parmi, loglikTB, gradlikTB, Dm = Dm, TXmat = TXmat, method = "BFGS",
                hessian = T, ...)
   }  
-  if (q$convergence != 0) 
-    stop(paste("Not converged, code:", q$convergence)) 
+  if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
   return(output(q))
 }
