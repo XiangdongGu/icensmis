@@ -198,15 +198,65 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
     lami <- rep(-log(initsurv)/J, J)
     tosurv <- function(x) exp(-cumsum(x))
     lowlam <- rep(0, J)
+    surv95 <- function(lam, covm) {
+      A <- matrix(0, nrow = J, ncol = J)
+      idx <- cbind(
+        unlist(sapply(1:J, function(i) rep(i, i))),
+        unlist(sapply(1:J, function(i) 1:i))
+      )
+      A[idx] <- 1
+      covmt <- A %*% covm %*% t(A)
+      lam_sd <- sqrt(diag(covmt))
+      low95 <- exp(-(cumsum(lam) + 1.96 * lam_sd))
+      high95 <- exp(-(cumsum(lam) - 1.96 * lam_sd))
+      data.frame(
+        time = utime[utime!=0],
+        surv = tosurv(lam),
+        low95 = low95,
+        high95 = high95)
+    }
   } else if (param == 2) {
     lami <- log(rep(-log(initsurv)/J, J))
     tosurv <- function(x) exp(-cumsum(exp(x)))
-    lowlam <- rep(-Inf, J)
+    surv95 <- function(lam, covm) {
+      A <- matrix(0, nrow = J, ncol = J)
+      idx <- cbind(
+        unlist(sapply(1:J, function(i) rep(i, i))),
+        unlist(sapply(1:J, function(i) 1:i))
+      )
+      A[idx] <- exp(lam[idx[, 2]])
+      covmt <- A %*% covm %*% t(A)
+      lam_sd <- sqrt(diag(covmt))
+      low95 <- exp(-(cumsum(exp(lam)) + 1.96 * lam_sd))
+      high95 <- exp(-(cumsum(exp(lam)) - 1.96 * lam_sd))
+      data.frame(
+        time = utime[utime!=0],
+        surv = tosurv(lam),
+        low95 = low95,
+        high95 = high95)
+    }
   } else if (param == 3) {
     lami <- log(-log(seq(1, initsurv, length.out = J + 1)[-1]))
     lami <- c(lami[1], diff(lami))
     tosurv <- function(x) exp(-exp(cumsum(x)))
     lowlam <- c(-Inf, rep(0, J - 1))
+    surv95 <- function(lam, covm) {
+      A <- matrix(0, nrow = J, ncol = J)
+      idx <- cbind(
+        unlist(sapply(1:J, function(i) rep(i, i))),
+        unlist(sapply(1:J, function(i) 1:i))
+      )
+      A[idx] <- 1
+      covmt <- A %*% covm %*% t(A)
+      lam_sd <- sqrt(diag(covmt))
+      low95 <- exp(-exp((cumsum(lam) + 1.96 * lam_sd)))
+      high95 <- exp(-exp((cumsum(lam) - 1.96 * lam_sd)))
+      data.frame(
+        time = utime[utime!=0],
+        surv = tosurv(lam),
+        low95 = low95,
+        high95 = high95)
+    }
   }
   
   #############################################################################
@@ -216,16 +266,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
     loglik <- -q$value
     cov_all <- as.matrix(solve(q$hessian))
     lam <- q$par[1:J]
-    surv <- tosurv(lam)
-    # compute 95% confidence interval
-    lam_sd <- sqrt(diag(cov_all[1:J, 1:J]))
-    low95 <- tosurv(lam + 1.96 * lam_sd)
-    high95 <- tosurv(pmax(lowlam, lam - 1.96 * lam_sd))
-    survival <- data.frame(
-      time = utime[utime!=0],
-      surv = surv,
-      low95 = low95,
-      high95 = high95)
+    survival <- surv95(lam, cov_all[1:J, 1:J])
     if (!is.null(formula)) {
       cov <- cov_all[-(1:J), -(1:J)]
       rownames(cov) <- colnames(cov) <- beta.nm
