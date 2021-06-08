@@ -201,6 +201,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
   } else if (param == 2) {
     lami <- log(rep(-log(initsurv)/J, J))
     tosurv <- function(x) exp(-cumsum(exp(x)))
+    lowlam <- rep(-Inf, J)
   } else if (param == 3) {
     lami <- log(-log(seq(1, initsurv, length.out = J + 1)[-1]))
     lami <- c(lami[1], diff(lami))
@@ -213,11 +214,20 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
   #############################################################################
   output <- function(q) {
     loglik <- -q$value
+    cov_all <- as.matrix(solve(q$hessian))
     lam <- q$par[1:J]
     surv <- tosurv(lam)
-    survival <- data.frame(time = utime[utime!=0], surv = surv)
+    # compute 95% confidence interval
+    lam_sd <- sqrt(diag(cov_all[1:J, 1:J]))
+    low95 <- tosurv(lam + 1.96 * lam_sd)
+    high95 <- tosurv(pmax(lowlam, lam - 1.96 * lam_sd))
+    survival <- data.frame(
+      time = utime[utime!=0],
+      surv = surv,
+      low95 = low95,
+      high95 = high95)
     if (!is.null(formula)) {
-      cov <- as.matrix(solve(q$hessian)[-(1:J), -(1:J)])
+      cov <- cov_all[-(1:J), -(1:J)]
       rownames(cov) <- colnames(cov) <- beta.nm
       beta.fit <- q$par[-(1:J)]
       beta.sd <- sqrt(diag(cov))
@@ -239,12 +249,13 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
   if (is.null(formula)) {
     if (param == 1) {
       q <- optim(lami, loglikA0, gradlikA0, lower = lowlam, Dm = Dm, 
-                 method = "L-BFGS-B", ...)
+                 method = "L-BFGS-B", hessian = T, ...)
     } else if (param == 2) {
-      q <- optim(lami, loglikB0, gradlikB0, Dm = Dm, method = "BFGS", ...)
+      q <- optim(lami, loglikB0, gradlikB0, Dm = Dm, method = "BFGS", 
+                 hessian = T, ...)
     } else if (param == 3) {
       q <- optim(lami, loglikC0, gradlikC0, lower = lowlam, Dm = Dm, 
-                 method = "L-BFGS-B", ...)
+                 method = "L-BFGS-B", hessian = T, ...)
     }
     if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
     return(output(q))
