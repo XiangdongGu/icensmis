@@ -350,3 +350,23 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
   if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
   return(output(q))
 }
+
+
+#' Plot survival function
+#' 
+#' This function plots survival function with confidence interval 
+#' from model output
+#' 
+#' @param obj model output object
+#' 
+#' @export
+#' 
+plot_surv <- function(obj) {
+  surv <- obj$survival
+  surv <- rbind(c(0, 1, 1, 1), surv)
+  plot(surv$time, surv$surv, type = "s", col = "red", xlab = "time",
+       ylab = "Survival")
+  lines(surv$time, surv$low95, type = "s", lty = 2)
+  lines(surv$time, surv$high95, type = "s", lty = 2)
+}
+
