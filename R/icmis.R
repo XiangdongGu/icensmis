@@ -47,7 +47,7 @@
 #'   likelihood function)
 #' @param ... other arguments passed to \code{\link{optim}} function. For 
 #'   example, if the optimization does not converge, we can increase maxit in 
-#'   the optim function.
+#'   the optim function's control argument.
 #'   
 #' @details The input data should be in longitudinal form with one row per test 
 #'   time. Use \code{\link{datasim}} to simulate a dataset to see the sample 
@@ -120,8 +120,8 @@
 #'  formula = ~cov1+cov2+cov3, negpred = 1, time.varying = TRUE)
 
 icmis <- function(subject, testtime, result, data, sensitivity, specificity,
-                   formula = NULL, negpred = 1, time.varying = F, 
-                   betai = NULL, initsurv = 0.5, param = 1, ...){
+                  formula = NULL, negpred = 1, time.varying = F, 
+                  betai = NULL, initsurv = 0.5, param = 1, ...){
   
   #############################################################################
   # Data Pre-processing: sort by id then by time
@@ -148,6 +148,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
             length(negpred) == 1, negpred >= 0, negpred <= 1)
   stopifnot(length(initsurv) == 1, initsurv > 0, initsurv < 1)
   if (!all(result %in% c(0, 1))) stop("result must be 0 or 1")
+  if (any(is.na(time))) stop("Missing value found in testtime")
   if (any(tapply(time, id, anyDuplicated)))
     stop("existing duplicated visit times for some subjects")  
   if (!all(utime >= 0 & utime < Inf))
@@ -155,6 +156,31 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
   stopifnot(length(param) == 1, param %in% c(1, 2, 3))
   if (param == 3 && time.varying) 
     stop("parameterization 3 is not available for time varying model")
+  
+  # Issue-1: Check for baseline prevalent subject
+  if (any(time == 0 & result == 1)) {
+    pre_ids <- id[time == 0 & result == 1]
+    stop(sprintf(
+      "Existing baseline prevalent subjects: %s; need to remove them",
+      paste(pre_ids, collapse = ","))
+    )
+  }
+  
+  # Issue-1: Check number of unique test times
+  if (length(utime) > sqrt(length(time))) {
+    warning(paste0(
+      "There are too many distinct testtime values, consider",
+      " rounding testtime, e.g. to year or month"
+    ))
+  }
+  
+  # Error message for convergence
+  conv_msg <- paste0(
+    "Model not converged, code: %s, refer to optim function for details. ",
+    "Try to increase maxit in function argument, ", 
+    "e.g. using control = list(maxit = 500), and/or",
+    " use different parameterization by changing param argument."
+  )
   
   #############################################################################
   # Compute D matrix
@@ -206,7 +232,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
     list(loglik = loglik, coefficient = coef, survival = survival, beta.cov = cov,
          nsub = nsub)
   }
-
+  
   #############################################################################
   # No-covariate model (one sample case)
   #############################################################################
@@ -220,8 +246,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
       q <- optim(lami, loglikC0, gradlikC0, lower = lowlam, Dm = Dm, 
                  method = "L-BFGS-B", ...)
     }
-    if (q$convergence != 0) 
-      stop(paste("Not converged, code:", q$convergence)) 
+    if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
     return(output(q))
   }
   
@@ -251,8 +276,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
       q <- optim(parmi, loglikC, gradlikC, lower = c(lowlam, rep(-Inf, nbeta)),
                  Dm = Dm, Xmat = Xmat, method = "L-BFGS-B", hessian = T, ...)
     }    
-    if (q$convergence != 0) 
-      stop(paste("Not converged, code:", q$convergence)) 
+    if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
     return(output(q))
   }
   
@@ -271,7 +295,6 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
     q <- optim(parmi, loglikTB, gradlikTB, Dm = Dm, TXmat = TXmat, method = "BFGS",
                hessian = T, ...)
   }  
-  if (q$convergence != 0) 
-    stop(paste("Not converged, code:", q$convergence)) 
+  if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
   return(output(q))
 }
