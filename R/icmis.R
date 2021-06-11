@@ -268,7 +268,7 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
     lam <- q$par[1:J]
     survival <- surv95(lam, cov_all[1:J, 1:J])
     if (!is.null(formula)) {
-      cov <- cov_all[-(1:J), -(1:J)]
+      cov <- cov_all[-(1:J), -(1:J), drop = FALSE]
       rownames(cov) <- colnames(cov) <- beta.nm
       beta.fit <- q$par[-(1:J)]
       beta.sd <- sqrt(diag(cov))
