@@ -132,6 +132,18 @@ datasim <- function(N, blambda, testtimes, sensitivity, specificity,
   if (!is.null(twogroup)) stopifnot(is.numeric(twogroup), length(twogroup) == 1, 
                                 twogroup > 0, twogroup < 1)
   
+  # check pcensor
+  if (!(length(pcensor) %in% c(1, length(testtimes)))) 
+    stop("length of pcensor should be 1 or same as survivals")
+  if (any(pcensor < 0)) stop("pcensor can not be negative values")
+  if (length(pcensor) == 1) {
+    if ((pcensor * length(survivals)) > 1) 
+      stop("Total censoring probabilities exceeding 1, see pcensor definition")
+  } else {
+    if (sum(pcensor) > 1)
+      stop("Total censoring probabilities exceeding 1, see pcensor definition")
+  }
+  
   
   #############################################################################
   # Simulate covariates and event time
