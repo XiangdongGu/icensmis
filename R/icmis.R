@@ -361,6 +361,8 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
 #' 
 #' @export
 #' 
+#' @importFrom graphics lines
+#' 
 plot_surv <- function(obj) {
   surv <- obj$survival
   surv <- rbind(c(0, 1, 1, 1), surv)
