@@ -24,9 +24,15 @@
 #'   probabilities of each test being randomly missing at each test time. If 
 #'   pmiss is a single value, then each test is assumed to have an identical 
 #'   probability of missingness.
-#' @param pcensor a value or a vector (must have same length as testtimes) of
-#' the probability of censoring at each visit, assuming censoring process
-#' is independent on other missing mechanisms.
+#' @param pcensor a value or a vector (must have same length as survivals) of
+#' the interval probabilities of censoring time at each interval, 
+#' assuming censoring process
+#' is independent on other missing mechanisms. If it is the single value, then
+#' we assume same interval probabilities as the value. The sum of pcensor (or 
+#' pcensor * length(survivals) if it is single value) must be <= 1. For example,
+#' if pcensor = c(0.1, 0.2), then it means the the probabilities of censoring time
+#' in first and second intervals are 0.1, 0.2, and the probability of not being
+#' censored is 0.7.
 #' @param design missing mechanism: "MCAR" or "NTFP".
 #' @param negpred baseline negative predictive value, i.e. the probability of 
 #'   being truely disease free for those who were tested (reported) as disease 
@@ -110,7 +116,17 @@ icpower <- function(HR, sensitivity, specificity, survivals, N = NULL, power = N
   if (length(pmiss)!=1 & length(pmiss)!=length(survivals))
     stop("length of pmiss must be 1 or same length as survivals")
   if (!(design %in% c("MCAR", "NTFP"))) stop("invalid design")
-  if (negpred<0 | negpred>1) stop("Check input for negpred")  	
+  if (negpred<0 | negpred>1) stop("Check input for negpred")
+  if (!(length(pcensor) %in% c(1, length(survivals)))) 
+    stop("length of pcensor should be 1 or same as survivals")
+  if (any(pcensor < 0)) stop("pcensor can not be negative values")
+  if (length(pcensor) == 1) {
+    if ((pcensor * length(survivals)) > 1) 
+      stop("Total censoring probabilities exceeding 1, see pcensor definition")
+  } else {
+    if (sum(pcensor) > 1)
+      stop("Total censoring probabilities exceeding 1, see pcensor definition")
+  }
   
   ## Use dedicated function for perfect test, so when perfect test use alternative instead
   if (sensitivity==1 & specificity==1) {

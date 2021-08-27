@@ -72,7 +72,7 @@ likelihood function)}
 
 \item{...}{other arguments passed to \code{\link{optim}} function. For 
 example, if the optimization does not converge, we can increase maxit in 
-the optim function.}
+the optim function's control argument.}
 }
 \value{
 A list of fitting results is returned with log-likelihood, estimated 

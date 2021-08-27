@@ -198,14 +198,65 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
     lami <- rep(-log(initsurv)/J, J)
     tosurv <- function(x) exp(-cumsum(x))
     lowlam <- rep(0, J)
+    surv95 <- function(lam, covm) {
+      A <- matrix(0, nrow = J, ncol = J)
+      idx <- cbind(
+        unlist(sapply(1:J, function(i) rep(i, i))),
+        unlist(sapply(1:J, function(i) 1:i))
+      )
+      A[idx] <- 1
+      covmt <- A %*% covm %*% t(A)
+      lam_sd <- sqrt(diag(covmt))
+      low95 <- exp(-(cumsum(lam) + 1.96 * lam_sd))
+      high95 <- exp(-(cumsum(lam) - 1.96 * lam_sd))
+      data.frame(
+        time = utime[utime!=0],
+        surv = tosurv(lam),
+        low95 = low95,
+        high95 = high95)
+    }
   } else if (param == 2) {
     lami <- log(rep(-log(initsurv)/J, J))
     tosurv <- function(x) exp(-cumsum(exp(x)))
+    surv95 <- function(lam, covm) {
+      A <- matrix(0, nrow = J, ncol = J)
+      idx <- cbind(
+        unlist(sapply(1:J, function(i) rep(i, i))),
+        unlist(sapply(1:J, function(i) 1:i))
+      )
+      A[idx] <- exp(lam[idx[, 2]])
+      covmt <- A %*% covm %*% t(A)
+      lam_sd <- sqrt(diag(covmt))
+      low95 <- exp(-(cumsum(exp(lam)) + 1.96 * lam_sd))
+      high95 <- exp(-(cumsum(exp(lam)) - 1.96 * lam_sd))
+      data.frame(
+        time = utime[utime!=0],
+        surv = tosurv(lam),
+        low95 = low95,
+        high95 = high95)
+    }
   } else if (param == 3) {
     lami <- log(-log(seq(1, initsurv, length.out = J + 1)[-1]))
     lami <- c(lami[1], diff(lami))
     tosurv <- function(x) exp(-exp(cumsum(x)))
     lowlam <- c(-Inf, rep(0, J - 1))
+    surv95 <- function(lam, covm) {
+      A <- matrix(0, nrow = J, ncol = J)
+      idx <- cbind(
+        unlist(sapply(1:J, function(i) rep(i, i))),
+        unlist(sapply(1:J, function(i) 1:i))
+      )
+      A[idx] <- 1
+      covmt <- A %*% covm %*% t(A)
+      lam_sd <- sqrt(diag(covmt))
+      low95 <- exp(-exp((cumsum(lam) + 1.96 * lam_sd)))
+      high95 <- exp(-exp((cumsum(lam) - 1.96 * lam_sd)))
+      data.frame(
+        time = utime[utime!=0],
+        surv = tosurv(lam),
+        low95 = low95,
+        high95 = high95)
+    }
   }
   
   #############################################################################
@@ -213,11 +264,11 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
   #############################################################################
   output <- function(q) {
     loglik <- -q$value
+    cov_all <- as.matrix(solve(q$hessian))
     lam <- q$par[1:J]
-    surv <- tosurv(lam)
-    survival <- data.frame(time = utime[utime!=0], surv = surv)
+    survival <- surv95(lam, cov_all[1:J, 1:J])
     if (!is.null(formula)) {
-      cov <- as.matrix(solve(q$hessian)[-(1:J), -(1:J)])
+      cov <- cov_all[-(1:J), -(1:J), drop = FALSE]
       rownames(cov) <- colnames(cov) <- beta.nm
       beta.fit <- q$par[-(1:J)]
       beta.sd <- sqrt(diag(cov))
@@ -239,12 +290,13 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
   if (is.null(formula)) {
     if (param == 1) {
       q <- optim(lami, loglikA0, gradlikA0, lower = lowlam, Dm = Dm, 
-                 method = "L-BFGS-B", ...)
+                 method = "L-BFGS-B", hessian = T, ...)
     } else if (param == 2) {
-      q <- optim(lami, loglikB0, gradlikB0, Dm = Dm, method = "BFGS", ...)
+      q <- optim(lami, loglikB0, gradlikB0, Dm = Dm, method = "BFGS", 
+                 hessian = T, ...)
     } else if (param == 3) {
       q <- optim(lami, loglikC0, gradlikC0, lower = lowlam, Dm = Dm, 
-                 method = "L-BFGS-B", ...)
+                 method = "L-BFGS-B", hessian = T, ...)
     }
     if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
     return(output(q))
@@ -298,3 +350,23 @@ icmis <- function(subject, testtime, result, data, sensitivity, specificity,
   if (q$convergence != 0) stop(sprintf(conv_msg, q$convergence)) 
   return(output(q))
 }
+
+
+#' Plot survival function
+#' 
+#' This function plots survival function with confidence interval 
+#' from model output
+#' 
+#' @param obj model output object
+#' 
+#' @export
+#' 
+plot_surv <- function(obj) {
+  surv <- obj$survival
+  surv <- rbind(c(0, 1, 1, 1), surv)
+  plot(surv$time, surv$surv, type = "s", col = "red", xlab = "time",
+       ylab = "Survival")
+  lines(surv$time, surv$low95, type = "s", lty = 2)
+  lines(surv$time, surv$high95, type = "s", lty = 2)
+}
+

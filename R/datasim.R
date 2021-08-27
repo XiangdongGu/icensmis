@@ -52,8 +52,13 @@
 #'   pmiss is a single value, then each test is assumed to have an identical 
 #'   probability of missingness.
 #' @param pcensor a value or a vector (must have same length as testtimes) of
-#' the probability of censoring at each visit, assuming censoring process
-#' is independent on other missing mechanisms.
+#' the interval probabilities of censoring time at each interval, 
+#' assuming censoring process
+#' is independent on other missing mechanisms. If it is the single value, then
+#' we assume same interval probabilities as the value. The sum of pcensor (or 
+#' pcensor * length(testtimes) if it is single value) must be <= 1. For example,
+#' if pcensor = c(0.1, 0.2), then it means the the probabilities of censoring time
+#' in first and second intervals are 0.1, 0.2, and the probability of not being
 #' @param design missing mechanism: "MCAR" or "NTFP"
 #' @param negpred baseline negative predictive value, i.e. the probability of being 
 #'   truely disease free for those who were tested (reported) as disease free at
@@ -126,6 +131,18 @@ datasim <- function(N, blambda, testtimes, sensitivity, specificity,
   if (!is.null(betas)) stopifnot(is.numeric(betas), is.finite(betas))
   if (!is.null(twogroup)) stopifnot(is.numeric(twogroup), length(twogroup) == 1, 
                                 twogroup > 0, twogroup < 1)
+  
+  # check pcensor
+  if (!(length(pcensor) %in% c(1, length(testtimes)))) 
+    stop("length of pcensor should be 1 or same as survivals")
+  if (any(pcensor < 0)) stop("pcensor can not be negative values")
+  if (length(pcensor) == 1) {
+    if ((pcensor * length(survivals)) > 1) 
+      stop("Total censoring probabilities exceeding 1, see pcensor definition")
+  } else {
+    if (sum(pcensor) > 1)
+      stop("Total censoring probabilities exceeding 1, see pcensor definition")
+  }
   
   
   #############################################################################
