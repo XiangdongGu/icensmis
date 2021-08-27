@@ -59,6 +59,7 @@
 #' pcensor * length(testtimes) if it is single value) must be <= 1. For example,
 #' if pcensor = c(0.1, 0.2), then it means the the probabilities of censoring time
 #' in first and second intervals are 0.1, 0.2, and the probability of not being
+#' censored is 0.7.
 #' @param design missing mechanism: "MCAR" or "NTFP"
 #' @param negpred baseline negative predictive value, i.e. the probability of being 
 #'   truely disease free for those who were tested (reported) as disease free at
@@ -137,7 +138,7 @@ datasim <- function(N, blambda, testtimes, sensitivity, specificity,
     stop("length of pcensor should be 1 or same as survivals")
   if (any(pcensor < 0)) stop("pcensor can not be negative values")
   if (length(pcensor) == 1) {
-    if ((pcensor * length(survivals)) > 1) 
+    if ((pcensor * length(testtimes)) > 1) 
       stop("Total censoring probabilities exceeding 1, see pcensor definition")
   } else {
     if (sum(pcensor) > 1)

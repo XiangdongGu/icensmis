@@ -60,7 +60,8 @@ is independent on other missing mechanisms. If it is the single value, then
 we assume same interval probabilities as the value. The sum of pcensor (or 
 pcensor * length(testtimes) if it is single value) must be <= 1. For example,
 if pcensor = c(0.1, 0.2), then it means the the probabilities of censoring time
-in first and second intervals are 0.1, 0.2, and the probability of not being}
+in first and second intervals are 0.1, 0.2, and the probability of not being
+censored is 0.7.}
 
 \item{design}{missing mechanism: "MCAR" or "NTFP"}
 
